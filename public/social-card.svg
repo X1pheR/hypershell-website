@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Hypershell — Spiny-powered homelab</title>
+  <desc id="description">Dark neon Hypershell branding with Spiny, the mascot.</desc>
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff2093"/>
+      <stop offset="0.58" stop-color="#3c6cfe"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <radialGradient id="pinkGlow" cx="0" cy="0" r="1" gradientTransform="translate(170 60) rotate(35) scale(520 360)">
+      <stop stop-color="#ff2093" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#ff2093" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blueGlow" cx="0" cy="0" r="1" gradientTransform="translate(1030 215) rotate(140) scale(570 430)">
+      <stop stop-color="#3c6cfe" stop-opacity="0.23"/>
+      <stop offset="1" stop-color="#3c6cfe" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0V56" fill="none" stroke="#94a3b8" stroke-opacity="0.07"/>
+    </pattern>
+    <filter id="spinyGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#000000" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="17" flood-color="#3c6cfe" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="#050816"/>
+  <rect width="1200" height="630" fill="url(#pinkGlow)"/>
+  <rect width="1200" height="630" fill="url(#blueGlow)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <rect x="62" y="58" width="1076" height="514" rx="28" fill="#0b1020" fill-opacity="0.62" stroke="url(#brand)" stroke-opacity="0.72"/>
+  <rect x="62" y="58" width="1076" height="4" rx="2" fill="url(#brand)"/>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <text x="116" y="150" fill="#22d3ee" font-size="19" font-weight="800" letter-spacing="4">RONALD'S CONNECTED HOME ENVIRONMENT</text>
+    <text x="108" y="295" fill="url(#brand)" font-size="112" font-weight="950" letter-spacing="-7">HYPERSHELL</text>
+    <text x="116" y="365" fill="#e2e8f0" font-size="32" font-weight="700">Spiny-powered homelab stack.</text>
+    <text x="116" y="416" fill="#94a3b8" font-size="25">Automation · Self-hosting · Infrastructure · Agentic AI</text>
+    <text x="116" y="505" fill="#64748b" font-size="20" font-style="italic">Built for chaos. Runs on coffee, beer and bad ideas.</text>
+  </g>
+
+  <ellipse cx="950" cy="484" rx="150" ry="24" fill="#000000" fill-opacity="0.40"/>
+  <image href="spiny.png" x="790" y="145" width="310" height="294" preserveAspectRatio="xMidYMid meet" filter="url(#spinyGlow)"/>
+</svg>

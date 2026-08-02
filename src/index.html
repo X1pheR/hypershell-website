@@ -13,16 +13,25 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hypershell">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="Hypershell — Spiny-powered homelab">
   <meta property="og:description" content="A personal connected home environment built around automation, self-hosting, infrastructure and intelligent agents.">
   <meta property="og:url" content="https://www.hypershell.eu/">
-  <meta property="og:image" content="https://www.hypershell.eu/spiny.png">
+  <meta property="og:image" content="https://www.hypershell.eu/social-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Hypershell neon homelab branding with Spiny, the mascot">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Hypershell — Spiny-powered homelab">
   <meta name="twitter:description" content="Built for chaos. Runs on coffee, beer and bad ideas.">
-  <meta name="twitter:image" content="https://www.hypershell.eu/spiny.png">
-  <link rel="stylesheet" href="/styles.css?v=20260802-1">
-  <script src="/site.js?v=20260801-5" defer></script>
+  <meta name="twitter:image" content="https://www.hypershell.eu/social-card.png">
+  <meta name="twitter:image:alt" content="Hypershell neon homelab branding with Spiny, the mascot">
+  <script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Hypershell","url":"https://www.hypershell.eu/","description":"Ronald's connected home environment for automation, self-hosting, infrastructure and intelligent agents.","author":{"@type":"Person","name":"Ronald de Wit","url":"https://www.hypershell.eu/","sameAs":["https://github.com/X1pheR","https://www.linkedin.com/in/rsdewit"]}}
+  </script>
+  <link rel="stylesheet" href="/styles.css?v=__ASSET_VERSION__">
+  <script src="/site.js?v=__ASSET_VERSION__" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -34,19 +43,28 @@
         <span>HYPERSHELL</span>
       </a>
 
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle>
-        <span class="sr-only">Toggle navigation</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg>
-      </button>
-
-      <nav class="primary-nav" id="primary-navigation" aria-label="Primary navigation" data-nav>
+      <nav class="primary-nav desktop-nav" id="primary-navigation" aria-label="Primary navigation">
         <a href="#inside">Inside the Lab</a>
         <a href="#projects">Projects</a>
         <a href="#architecture">Architecture</a>
         <a href="#about">About</a>
       </nav>
+
+      <details class="nav-menu" data-nav-menu>
+        <summary class="nav-toggle">
+          <span class="sr-only">Toggle navigation</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </summary>
+
+        <nav class="primary-nav mobile-nav" id="mobile-navigation" aria-label="Mobile navigation" data-mobile-nav>
+          <a href="#inside">Inside the Lab</a>
+          <a href="#projects">Projects</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#about">About</a>
+        </nav>
+      </details>
 
       <a class="dashboard-link" href="https://dash.hypershell.eu" aria-label="Open private dashboard" data-tooltip="Private dashboard">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -78,7 +96,7 @@
         </div>
         <p class="hero-context">A personal home environment built around automation, self-hosting, infrastructure and intelligent agents.</p>
 
-        <a class="scroll-cue" href="#inside" aria-label="Explore inside the lab">
+        <a class="scroll-cue" href="#inside">
           <span>Explore the lab</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
         </a>
@@ -99,7 +117,7 @@
           </div>
           <h3>Smart Home &amp; Automation</h3>
           <p>The physical home connected to sensors, lighting, presence, Zigbee and context-aware automation.</p>
-          <ul class="tag-list" aria-label="Examples"><li>Home Assistant</li><li>Zigbee2MQTT</li><li>Automation</li></ul>
+          <ul class="tag-list"><li>Home Assistant</li><li>Zigbee2MQTT</li><li>Automation</li></ul>
         </article>
 
         <article class="glass-card domain-card">
@@ -108,7 +126,7 @@
           </div>
           <h3>Agentic AI &amp; Knowledge</h3>
           <p>Local and hybrid agents that can reason over tools, infrastructure and governed knowledge.</p>
-          <ul class="tag-list" aria-label="Examples"><li>Hermes</li><li>MCP</li><li>Obsidian</li></ul>
+          <ul class="tag-list"><li>Hermes</li><li>MCP</li><li>Obsidian</li></ul>
         </article>
 
         <article class="glass-card domain-card">
@@ -117,7 +135,7 @@
           </div>
           <h3>Infrastructure &amp; Networking</h3>
           <p>The compute, network and storage foundation underneath every part of the environment.</p>
-          <ul class="tag-list" aria-label="Examples"><li>Proxmox</li><li>Docker</li><li>Networking</li></ul>
+          <ul class="tag-list"><li>Proxmox</li><li>Docker</li><li>Networking</li></ul>
         </article>
 
         <article class="glass-card domain-card">
@@ -126,7 +144,7 @@
           </div>
           <h3>Applications &amp; Digital Life</h3>
           <p>Self-hosted applications supporting daily life, files, entertainment, finance and personal data.</p>
-          <ul class="tag-list" aria-label="Examples"><li>Nextcloud</li><li>Romm</li><li>Utilities</li></ul>
+          <ul class="tag-list"><li>Nextcloud</li><li>RomM</li><li>Utilities</li></ul>
         </article>
 
         <article class="glass-card domain-card">
@@ -135,7 +153,7 @@
           </div>
           <h3>Operations &amp; Observability</h3>
           <p>The dashboards and tools used to understand, operate and continuously improve the environment.</p>
-          <ul class="tag-list" aria-label="Examples"><li>HomeSight</li><li>Grafana</li><li>Telemetry</li></ul>
+          <ul class="tag-list"><li>HomeSight</li><li>Grafana</li><li>Telemetry</li></ul>
         </article>
 
         <article class="glass-card domain-card">
@@ -144,7 +162,7 @@
           </div>
           <h3>Identity, Access &amp; Resilience</h3>
           <p>Secure access, recoverability and protection without turning the house into an enterprise datacenter.</p>
-          <ul class="tag-list" aria-label="Examples"><li>Pocket ID</li><li>Caddy</li><li>Backups</li></ul>
+          <ul class="tag-list"><li>Pocket ID</li><li>Caddy</li><li>Backups</li></ul>
         </article>
       </div>
     </section>
@@ -160,26 +178,26 @@
 
       <div class="project-grid">
         <article class="glass-card project-card project-featured">
-          <div class="project-meta"><span class="status active">Active</span><span>Architecture &amp; inventory</span></div>
+          <div class="project-meta"><span class="status operational">Operational</span><span>Architecture &amp; inventory</span></div>
           <h3>HomeSight</h3>
           <p>A canonical inventory and architecture insight layer for understanding what exists, how it relates and where reality drifts from intent.</p>
           <img class="project-logo" src="/homesight.svg" alt="" width="64" height="64" aria-hidden="true">
         </article>
 
         <article class="glass-card project-card">
-          <div class="project-meta"><span class="status evolving">Evolving</span><span>Agent workspace</span></div>
+          <div class="project-meta"><span class="status operational">Operational</span><span>Agent workspace</span></div>
           <h3>Hermes</h3>
           <p>A local and hybrid agent environment with access to tools, skills and governed knowledge.</p>
         </article>
 
         <article class="glass-card project-card">
-          <div class="project-meta"><span class="status active">Active</span><span>Identity &amp; access</span></div>
+          <div class="project-meta"><span class="status in-progress">In progress</span><span>Identity &amp; access</span></div>
           <h3>Unified Identity</h3>
           <p>Moving supported services toward native OIDC, passkeys and consistent secure remote access.</p>
         </article>
 
         <article class="glass-card project-card">
-          <div class="project-meta"><span class="status experimental">Experimental</span><span>Resilience</span></div>
+          <div class="project-meta"><span class="status in-progress">In progress</span><span>Resilience</span></div>
           <h3>Backup Modernisation</h3>
           <p>Bringing application data, host data and off-site protection into a recovery model that remains understandable.</p>
         </article>
@@ -194,7 +212,7 @@
       </div>
 
       <div class="architecture-layout">
-        <div class="architecture-stack" aria-label="Simplified Hypershell architecture">
+        <div class="architecture-stack" role="img" aria-label="Simplified Hypershell architecture from the physical home down to physical hardware">
           <div class="architecture-layer layer-home">
             <span>People, devices &amp; the physical home</span>
           </div>

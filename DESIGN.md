@@ -115,15 +115,15 @@ components:
   divider:
     backgroundColor: "{colors.border}"
     height: 1px
-  status-active:
+  status-operational:
     backgroundColor: "{colors.tertiary}"
     rounded: "{rounded.full}"
     size: 7px
-  status-evolving:
+  status-in-progress:
     backgroundColor: "{colors.primary}"
     rounded: "{rounded.full}"
     size: 7px
-  status-experimental:
+  status-exploratory:
     backgroundColor: "{colors.secondary}"
     rounded: "{rounded.full}"
     size: 7px
@@ -228,9 +228,9 @@ Render both with `object-fit: contain`. The profile portrait uses a square conta
 
 ### Header and navigation
 
-The header is transparent at the top and gains a translucent base-surface background, subtle border, shadow and blur after scrolling. Desktop navigation is centered. Mobile navigation appears as an elevated menu beneath the header.
+The header is transparent at the top and gains a translucent base-surface background, subtle border, shadow and blur after scrolling. Desktop navigation is centered. Mobile navigation uses a native `details` disclosure and appears as an elevated menu beneath the header, so it remains usable without JavaScript.
 
-Active and hover navigation states use heading-colour text and a thin brand-gradient indicator. Keyboard focus uses a clearly visible cyan outline with offset.
+Active and hover navigation states use heading-colour text and a thin brand-gradient indicator. Keyboard focus uses a clearly visible cyan outline with offset. Closing the enhanced mobile menu with Escape returns focus to its summary control.
 
 ### Hero
 
@@ -252,9 +252,9 @@ Never expose internal addresses, ports, hostnames, credentials or a complete att
 
 ### Buttons, links and tags
 
-Primary-looking links use an elevated dark fill with a gradient border rather than a solid neon fill. Icon buttons are circular and 44px by 44px on larger screens. Tags are compact pills with muted text and subtle borders.
+Primary-looking links use an elevated dark fill with a gradient border rather than a solid neon fill. Icon buttons are circular and at least 44px by 44px. Tags are compact pills with muted text and subtle borders.
 
-All interactive elements require visible hover and keyboard-focus states. Avoid interactions that depend exclusively on hover.
+Interactive touch targets should be at least 44px high where layout permits. All interactive elements require visible hover and keyboard-focus states. Avoid interactions that depend exclusively on hover.
 
 ### Mascot and imagery
 
@@ -269,6 +269,7 @@ Images must declare intrinsic width and height to prevent layout shift. Decorati
 - **Do** keep body text readable, restrained and structurally clear.
 - **Do** maintain semantic HTML, visible keyboard focus and reduced-motion support.
 - **Do** test desktop, tablet and narrow mobile viewports for overflow and content order.
+- **Do** keep mobile navigation usable with keyboard input and without JavaScript.
 - **Do** keep `DESIGN.md` and `src/styles.css` synchronized when normative values change.
 - **Don't** turn large surfaces into opaque neon gradients.
 - **Don't** add remote fonts, UI frameworks or runtime design libraries without a concrete requirement.
