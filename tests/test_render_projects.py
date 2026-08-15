@@ -59,3 +59,9 @@ class ProjectRenderingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class DeploymentScriptTests(unittest.TestCase):
+    def test_deploy_does_not_preserve_metadata_on_target_directory(self):
+        deploy = (Path(__file__).resolve().parents[1] / "scripts" / "deploy.sh").read_text()
+        self.assertNotIn('cp -a "$DIST_DIR/." "$TARGET_DIR/"', deploy)
+        self.assertIn('find "$DIST_DIR" -mindepth 1 -maxdepth 1 -exec cp -a -- {} "$TARGET_DIR/" \\;', deploy)
