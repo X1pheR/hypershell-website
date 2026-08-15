@@ -70,6 +70,12 @@ class ProjectRenderingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing a GitHub description"):
             render_projects.render_project_cards([], [repo], {})
 
+    def test_bitwarden_secrets_manager_product_metadata_uses_new_identity_only(self):
+        root = Path(__file__).resolve().parents[1]
+        overrides = json.loads((root / "src" / "data" / "project-display-names.json").read_text())
+        self.assertEqual(overrides["bitwarden-secrets-manager-mcp"], "Bitwarden Secrets Manager MCP")
+        self.assertNotIn("bws-secrets-mcp", overrides)
+
     def test_resolve_token_reads_protected_token_file_when_env_is_absent(self):
         with tempfile.TemporaryDirectory() as directory:
             token_file = Path(directory) / "github-token"
