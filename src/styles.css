@@ -351,3 +351,21 @@ a, button { -webkit-tap-highlight-color: transparent; }
   .reveal-ready .reveal { opacity: 1 !important; filter: none !important; transform: none !important; }
   .glitch-layer { display: none !important; }
 }
+
+.project-repo-link {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.35rem;
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: rgb(var(--muted));
+  border: 1px solid rgb(var(--border) / .42);
+  border-radius: 9999px;
+  background: rgb(var(--base) / .45);
+  transition: color 170ms ease, border-color 170ms ease, background-color 170ms ease;
+}
+.project-repo-link:hover { color: rgb(var(--heading)); border-color: rgb(var(--cyan) / .6); background: rgb(var(--soft) / .72); }
+.project-repo-link:focus-visible { outline: 2px solid rgb(var(--cyan)); outline-offset: 3px; }
+.project-repo-link svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }

@@ -7,7 +7,20 @@ DIST_DIR="$ROOT_DIR/dist"
 rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
-cp "$ROOT_DIR/src/index.html" "$DIST_DIR/index.html"
+if [ -n "${GITHUB_REPOSITORIES_FILE:-}" ]; then
+  python3 "$ROOT_DIR/scripts/render_projects.py" \
+    --template "$ROOT_DIR/src/index.html" \
+    --output "$DIST_DIR/index.html" \
+    --manual "$ROOT_DIR/src/data/manual-projects.json" \
+    --overrides "$ROOT_DIR/src/data/project-display-names.json" \
+    --repositories-file "$GITHUB_REPOSITORIES_FILE"
+else
+  python3 "$ROOT_DIR/scripts/render_projects.py" \
+    --template "$ROOT_DIR/src/index.html" \
+    --output "$DIST_DIR/index.html" \
+    --manual "$ROOT_DIR/src/data/manual-projects.json" \
+    --overrides "$ROOT_DIR/src/data/project-display-names.json"
+fi
 cp "$ROOT_DIR/src/404.html" "$DIST_DIR/404.html"
 cp "$ROOT_DIR/src/styles.css" "$DIST_DIR/styles.css"
 cp "$ROOT_DIR/src/site.js" "$DIST_DIR/site.js"

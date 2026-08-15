@@ -1,0 +1,28 @@
+[
+  {
+    "name": "HomeSight",
+    "description": "A canonical inventory and architecture insight layer for understanding what exists, how it relates and where reality drifts from intent.",
+    "status": "Operational",
+    "meta": "Architecture & inventory",
+    "featured": true,
+    "logo": "/homesight.svg"
+  },
+  {
+    "name": "Hermes",
+    "description": "A local and hybrid agent environment with access to tools, skills and governed knowledge.",
+    "status": "Operational",
+    "meta": "Agent workspace"
+  },
+  {
+    "name": "Unified Identity",
+    "description": "Moving supported services toward native OIDC, passkeys and consistent secure remote access.",
+    "status": "In progress",
+    "meta": "Identity & access"
+  },
+  {
+    "name": "Backup Modernisation",
+    "description": "Bringing application data, host data and off-site protection into a recovery model that remains understandable.",
+    "status": "In progress",
+    "meta": "Resilience"
+  }
+]

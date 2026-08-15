@@ -115,6 +115,11 @@ for (const viewport of viewports) {
       expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
     }
 
+    await expect(page.getByRole('heading', { name: 'DBackup MCP', level: 3 })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Open DBackup MCP on GitHub' })).toHaveAttribute('href', 'https://github.com/X1pheR/dbackup-mcp');
+    await expect(page.getByRole('heading', { name: 'HATS', level: 3 })).toBeVisible();
+    expect(await page.locator('a[href="https://github.com/X1pheR/hypershell-hats"]').count()).toBe(0);
+
     await page.locator('#inside .section-heading').evaluate((element) => {
       element.scrollIntoView({ block: 'center' });
     });

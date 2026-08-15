@@ -1,0 +1,26 @@
+[
+  {
+    "name": "dbackup-mcp",
+    "homepage": "https://www.hypershell.eu/#projects",
+    "archived": false,
+    "private": false,
+    "description": "Backup management MCP server.",
+    "html_url": "https://github.com/X1pheR/dbackup-mcp"
+  },
+  {
+    "name": "hypershell-hats",
+    "homepage": "https://www.hypershell.eu/#projects",
+    "archived": false,
+    "private": true,
+    "description": "Private Hypershell agent tooling.",
+    "html_url": "https://github.com/X1pheR/hypershell-hats"
+  },
+  {
+    "name": "resources",
+    "homepage": "https://www.hypershell.eu",
+    "archived": false,
+    "private": false,
+    "description": "Not a project card.",
+    "html_url": "https://github.com/X1pheR/resources"
+  }
+]

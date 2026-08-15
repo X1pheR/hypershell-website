@@ -34,7 +34,19 @@ hypershell-website/
 ./scripts/build.sh
 ```
 
-The build has no package-manager or network dependency. It creates `dist/`, derives a content-based asset version and validates every required output asset.
+The build has no package-manager dependency. It fetches current GitHub repository metadata at build time, renders selected Hypershell projects into the static site, creates `dist/`, derives a content-based asset version and validates every required output asset.
+
+Live project discovery requires `GH_TOKEN` or `GITHUB_TOKEN` with read access to the owner repositories that may be selected. The token is used only for the GitHub API request and is never written to `dist/`. A build fails if authenticated repository metadata cannot be retrieved.
+
+A repository is included automatically when it is active and its GitHub **Website** field is exactly:
+
+```text
+https://www.hypershell.eu/#projects
+```
+
+Public repositories receive a GitHub link. Private repositories may expose their selected name, description and `PRIVATE` visibility label but never their repository URL. Display-name exceptions live in `src/data/project-display-names.json`; non-GitHub projects remain supported through `src/data/manual-projects.json`.
+
+For deterministic tests or an explicitly pre-fetched metadata input, set `GITHUB_REPOSITORIES_FILE` to a JSON file with GitHub repository objects.
 
 ## Test
 
@@ -50,7 +62,7 @@ BASE_URL=https://www.hypershell.eu ./scripts/test.sh
 
 Tests are project-specific and run in an ephemeral pinned Playwright container. The container installs its test-only packages in temporary storage and is removed after the run. No Playwright service remains running and the production site has no Node.js dependency.
 
-The suite covers responsive layout, overflow, mobile navigation with and without JavaScript, keyboard focus restoration, mascot proportions, glitch lifecycle, project-card consistency, social metadata, the custom 404 response and WCAG A/AA checks through Axe.
+The suite covers project selection/rendering, responsive layout, overflow, mobile navigation with and without JavaScript, keyboard focus restoration, mascot proportions, glitch lifecycle, project-card consistency, social metadata, the custom 404 response and WCAG A/AA checks through Axe.
 
 ## Deploy
 
@@ -58,15 +70,15 @@ The suite covers responsive layout, overflow, mobile navigation with and without
 ./scripts/deploy.sh
 ```
 
-The default target is:
+Set the deployment target explicitly through `TARGET_DIR`:
 
-```text
-/srv/hypershell/sites/public/hypershell.eu
+```sh
+TARGET_DIR=/path/to/site ./scripts/deploy.sh
 ```
 
 Deployment rebuilds the site, removes stale files from the target and copies the complete validated output. Historical timestamp backups are not retained; source rollback is handled through Git and a previous commit can be rebuilt and redeployed.
 
-Caddy serves the target directory through its existing read-only bind mount. Static file updates do not require a Caddy restart.
+The production web server serves the deployed static files. Static file updates do not require an application runtime or server restart.
 
 ## Content boundaries
 
@@ -77,3 +89,7 @@ Do not publish:
 - complete runtime topology;
 - private family or household information;
 - operational data that would materially help target the environment.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).

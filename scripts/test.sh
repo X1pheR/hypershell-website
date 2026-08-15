@@ -4,7 +4,10 @@ set -eu
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 PLAYWRIGHT_IMAGE="${PLAYWRIGHT_IMAGE:-mcr.microsoft.com/playwright:v1.61.1-noble}"
 
-"$ROOT_DIR/scripts/build.sh"
+python3 -m unittest discover -s "$ROOT_DIR/tests" -p 'test_*.py' -v
+
+GITHUB_REPOSITORIES_FILE="$ROOT_DIR/tests/github-repositories.fixture.json" \
+  "$ROOT_DIR/scripts/build.sh"
 
 command -v docker >/dev/null 2>&1 || {
   echo "Docker is required to run the browser test suite" >&2

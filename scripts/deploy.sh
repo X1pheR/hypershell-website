@@ -3,7 +3,7 @@ set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
-TARGET_DIR="${TARGET_DIR:-/srv/hypershell/sites/public/hypershell.eu}"
+TARGET_DIR="${TARGET_DIR:?TARGET_DIR is required}"
 
 "$ROOT_DIR/scripts/build.sh"
 
