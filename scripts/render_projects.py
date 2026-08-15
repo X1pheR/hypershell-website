@@ -22,14 +22,18 @@ def display_name(repo_name, overrides):
     return " ".join(words)
 
 
-def select_repositories(repositories):
+def select_repositories(repositories, overrides):
+    selected = [
+        repo
+        for repo in repositories
+        if not repo.get("archived") and repo.get("homepage") == PROJECT_HOMEPAGE
+    ]
+    for repo in selected:
+        if not str(repo.get("description") or "").strip():
+            raise ValueError(f"Selected GitHub repository '{repo.get('name', '<unknown>')}' is missing a GitHub description")
     return sorted(
-        [
-            repo
-            for repo in repositories
-            if not repo.get("archived") and repo.get("homepage") == PROJECT_HOMEPAGE
-        ],
-        key=lambda repo: repo.get("name", "").lower(),
+        selected,
+        key=lambda repo: display_name(repo.get("name", ""), overrides).casefold(),
     )
 
 
@@ -62,7 +66,7 @@ def render_manual_card(project):
 
 def render_repository_card(repo, overrides):
     name = html.escape(display_name(repo["name"], overrides))
-    description = html.escape(repo.get("description") or "No description provided.")
+    description = html.escape(repo["description"].strip())
     private = bool(repo.get("private"))
     visibility = "PRIVATE" if private else "PUBLIC"
     link = ""
@@ -81,7 +85,7 @@ def render_repository_card(repo, overrides):
 
 def render_project_cards(manual_projects, repositories, overrides):
     cards = [render_manual_card(project) for project in manual_projects]
-    cards.extend(render_repository_card(repo, overrides) for repo in select_repositories(repositories))
+    cards.extend(render_repository_card(repo, overrides) for repo in select_repositories(repositories, overrides))
     return "\n\n".join(cards)
 
 
@@ -90,10 +94,19 @@ def load_json(path):
         return json.load(handle)
 
 
-def fetch_repositories():
-    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
-    if not token:
-        raise RuntimeError("GH_TOKEN or GITHUB_TOKEN is required to fetch private and public GitHub project metadata")
+def resolve_token(environ, token_file=None):
+    token = environ.get("GH_TOKEN") or environ.get("GITHUB_TOKEN")
+    if token:
+        return token.strip()
+    if token_file:
+        token = Path(token_file).read_text(encoding="utf-8").strip()
+        if token:
+            return token
+    raise RuntimeError("GH_TOKEN, GITHUB_TOKEN, or a readable GitHub token file is required to fetch private and public GitHub project metadata")
+
+
+def fetch_repositories(token_file=None):
+    token = resolve_token(os.environ, token_file)
     request = urllib.request.Request(
         API_URL,
         headers={
@@ -117,9 +130,10 @@ def main():
     parser.add_argument("--manual", required=True)
     parser.add_argument("--overrides", required=True)
     parser.add_argument("--repositories-file")
+    parser.add_argument("--token-file")
     args = parser.parse_args()
 
-    repositories = load_json(args.repositories_file) if args.repositories_file else fetch_repositories()
+    repositories = load_json(args.repositories_file) if args.repositories_file else fetch_repositories(args.token_file)
     manual_projects = load_json(args.manual)
     overrides = load_json(args.overrides)
     project_html = render_project_cards(manual_projects, repositories, overrides)

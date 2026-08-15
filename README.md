@@ -36,7 +36,7 @@ hypershell-website/
 
 The build has no package-manager dependency. It fetches current GitHub repository metadata at build time, renders selected Hypershell projects into the static site, creates `dist/`, derives a content-based asset version and validates every required output asset.
 
-Live project discovery requires `GH_TOKEN` or `GITHUB_TOKEN` with read access to the owner repositories that may be selected. The token is used only for the GitHub API request and is never written to `dist/`. A build fails if authenticated repository metadata cannot be retrieved.
+Live project discovery requires authenticated GitHub repository metadata access. The build accepts `GH_TOKEN` or `GITHUB_TOKEN`; alternatively it reads a protected token file from `GITHUB_TOKEN_FILE` or, by default, `.runtime-secrets/github-token` when that file exists. `.runtime-secrets/` is ignored by Git. The token is used only for the GitHub API request and is never written to `dist/`. A build fails if authenticated repository metadata cannot be retrieved.
 
 A repository is included automatically when it is active and its GitHub **Website** field is exactly:
 
@@ -44,7 +44,7 @@ A repository is included automatically when it is active and its GitHub **Websit
 https://www.hypershell.eu/#projects
 ```
 
-Public repositories receive a GitHub link. Private repositories may expose their selected name, description and `PRIVATE` visibility label but never their repository URL. Display-name exceptions live in `src/data/project-display-names.json`; non-GitHub projects remain supported through `src/data/manual-projects.json`.
+Public repositories receive a GitHub link. Private repositories may expose their selected name, description and `PRIVATE` visibility label but never their repository URL. Selected repositories must have a non-empty GitHub description or the build fails. GitHub-backed project cards are sorted alphabetically by their display name; display-name exceptions live in `src/data/project-display-names.json`, otherwise the repository name is humanized. Non-GitHub projects remain supported through `src/data/manual-projects.json` and keep their declared order.
 
 For deterministic tests or an explicitly pre-fetched metadata input, set `GITHUB_REPOSITORIES_FILE` to a JSON file with GitHub repository objects.
 

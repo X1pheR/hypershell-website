@@ -16,7 +16,7 @@ class ProjectRenderingTests(unittest.TestCase):
             {"name": "wrong-homepage", "homepage": "https://www.hypershell.eu", "archived": False, "private": False, "description": "No", "html_url": "https://github.com/X1pheR/wrong-homepage"},
             {"name": "archived", "homepage": "https://www.hypershell.eu/#projects", "archived": True, "private": False, "description": "No", "html_url": "https://github.com/X1pheR/archived"},
         ]
-        selected = render_projects.select_repositories(repos)
+        selected = render_projects.select_repositories(repos, {})
         self.assertEqual([repo["name"] for repo in selected], ["included"])
 
     def test_private_repository_is_rendered_without_repository_link(self):
@@ -55,6 +55,26 @@ class ProjectRenderingTests(unittest.TestCase):
     def test_humanize_repo_name_is_default_when_no_override_exists(self):
         self.assertEqual(render_projects.display_name("pocket-id-mcp", {}), "Pocket ID MCP")
         self.assertEqual(render_projects.display_name("hypershell-infrastructure", {}), "Hypershell Infrastructure")
+
+    def test_selected_repositories_sort_by_display_name(self):
+        repos = [
+            {"name": "alpha-tool", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "Alpha repo", "html_url": "https://github.com/X1pheR/alpha-tool"},
+            {"name": "zeta-tool", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "Zeta repo", "html_url": "https://github.com/X1pheR/zeta-tool"},
+        ]
+        overrides = {"alpha-tool": "Zulu", "zeta-tool": "Alpha"}
+        selected = render_projects.select_repositories(repos, overrides)
+        self.assertEqual([repo["name"] for repo in selected], ["zeta-tool", "alpha-tool"])
+
+    def test_selected_repository_requires_description(self):
+        repo = {"name": "missing-description", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "  ", "html_url": "https://github.com/X1pheR/missing-description"}
+        with self.assertRaisesRegex(ValueError, "missing a GitHub description"):
+            render_projects.render_project_cards([], [repo], {})
+
+    def test_resolve_token_reads_protected_token_file_when_env_is_absent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            token_file = Path(directory) / "github-token"
+            token_file.write_text("example-token\n", encoding="utf-8")
+            self.assertEqual(render_projects.resolve_token({}, token_file), "example-token")
 
 
 if __name__ == "__main__":

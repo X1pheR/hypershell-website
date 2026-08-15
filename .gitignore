@@ -1,4 +1,5 @@
 dist/
+.runtime-secrets/
 .DS_Store
 *.swp
 *.tmp
