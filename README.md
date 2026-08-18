@@ -60,7 +60,7 @@ Run the same suite against the deployed website with:
 BASE_URL=https://www.hypershell.eu ./scripts/test.sh
 ```
 
-Tests are project-specific and run in an ephemeral pinned Playwright container. The container installs its test-only packages in temporary storage and is removed after the run. No Playwright service remains running and the production site has no Node.js dependency.
+Tests are project-specific and run in an ephemeral digest-pinned Playwright container. The container installs its test-only packages from the committed npm lockfile into temporary storage and is removed after the run. No Playwright service remains running and the production site has no Node.js dependency.
 
 The suite covers project selection/rendering, responsive layout, overflow, mobile navigation with and without JavaScript, keyboard focus restoration, mascot proportions, glitch lifecycle, project-card consistency, social metadata, the custom 404 response and WCAG A/AA checks through Axe.
 

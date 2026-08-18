@@ -11,10 +11,12 @@ const config = {
     timeout: 5_000,
   },
   reporter: 'line',
+  outputDir: process.env.PLAYWRIGHT_OUTPUT_DIR || 'test-results',
   use: {
     baseURL,
     browserName: 'chromium',
     trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
 };
 
