@@ -1,5 +1,7 @@
 # Hypershell Website
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/X1pheR/hypershell-website/badge)](https://scorecard.dev/viewer/?uri=github.com/X1pheR/hypershell-website)
+
 Static public website for `hypershell.eu` and `www.hypershell.eu`.
 
 Hypershell is Ronald's personal homelab and connected home environment. The site presents its major domains, selected projects, simplified public architecture and visual identity without exposing internal topology or operational details.
@@ -48,6 +50,10 @@ Public repositories receive a GitHub link. Private repositories may expose their
 
 For deterministic tests or an explicitly pre-fetched metadata input, set `GITHUB_REPOSITORIES_FILE` to a JSON file with GitHub repository objects.
 
+## Feedback and contributions
+
+Use [GitHub Issues](https://github.com/X1pheR/hypershell-website/issues) for non-sensitive bugs and focused proposals and pull requests for changes. See [CONTRIBUTING.md](CONTRIBUTING.md) for the public-content boundary, development workflow and validation expectations. Security-sensitive reports must follow the private process in [SECURITY.md](SECURITY.md).
+
 ## Test
 
 ```sh
@@ -61,6 +67,8 @@ BASE_URL=https://www.hypershell.eu ./scripts/test.sh
 ```
 
 Tests are project-specific and run in an ephemeral digest-pinned Playwright container. The container installs its test-only packages from the committed npm lockfile into temporary storage and is removed after the run. No Playwright service remains running and the production site has no Node.js dependency.
+
+GitHub CI runs the same repository test entry point. Browser-test dependencies are locked, Dependabot tracks npm and GitHub Actions updates, external Actions are pinned to full commit SHAs, GitHub CodeQL default setup scans the maintained JavaScript/Python/workflow source, and OpenSSF Scorecard publishes an independent repository-security signal.
 
 The suite covers project selection/rendering, responsive layout, overflow, mobile navigation with and without JavaScript, keyboard focus restoration, mascot proportions, glitch lifecycle, project-card consistency, social metadata, the custom 404 response and WCAG A/AA checks through Axe.
 
@@ -79,6 +87,12 @@ TARGET_DIR=/path/to/site ./scripts/deploy.sh
 Deployment rebuilds the site, removes stale files from the target and copies the complete validated output. Historical timestamp backups are not retained; source rollback is handled through Git and a previous commit can be rebuilt and redeployed.
 
 The production web server serves the deployed static files. Static file updates do not require an application runtime or server restart.
+
+## Repository and deployment lifecycle
+
+The website is versioned through Git history rather than a package or GitHub Release line. `main` is the reviewed source branch; deployment rebuilds the validated static site from an accepted source revision. GitHub Releases and artifact provenance are therefore not a second publication boundary for this repository.
+
+Repository security uses protected-branch CI/CodeQL gates, Dependabot, Secret Scanning with Push Protection and GitHub Private Vulnerability Reporting. Deployment credentials and runtime-specific targets remain outside the public source.
 
 ## Content boundaries
 
