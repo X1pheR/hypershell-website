@@ -6,5 +6,6 @@
   "mcp-server-filesystem": "MCP Server Filesystem",
   "ms365-mcp": "Microsoft 365 MCP",
   "pocket-id-mcp": "Pocket ID MCP",
-  "qmd-mcp": "QMD MCP"
+  "qmd-mcp": "QMD MCP",
+  "romm-mcp": "RomM MCP"
 }
