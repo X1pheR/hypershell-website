@@ -68,9 +68,9 @@ for (const viewport of viewports) {
       naturalHeight: image.naturalHeight,
       renderedRatio: image.getBoundingClientRect().width / image.getBoundingClientRect().height,
     }));
-    expect(spiny.naturalWidth).toBe(449);
-    expect(spiny.naturalHeight).toBe(425);
-    expect(spiny.renderedRatio).toBeCloseTo(449 / 425, 2);
+    expect(spiny.naturalWidth).toBe(1254);
+    expect(spiny.naturalHeight).toBe(1254);
+    expect(spiny.renderedRatio).toBeCloseTo(1, 2);
 
     const missingAnchors = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('a[href^="#"]'))

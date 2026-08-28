@@ -96,7 +96,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .spiny-stage {
   position: relative;
   width: clamp(122px, 18vw, 190px);
-  aspect-ratio: 449 / 425;
+  aspect-ratio: 1 / 1;
   margin: 0 auto .9rem;
   animation: spiny-float 5.4s ease-in-out infinite;
   isolation: isolate;
