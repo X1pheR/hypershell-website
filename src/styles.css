@@ -96,9 +96,8 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .spiny-stage {
   position: relative;
   width: clamp(122px, 18vw, 190px);
-  aspect-ratio: 449 / 425;
+  aspect-ratio: 1 / 1;
   margin: 0 auto .9rem;
-  animation: spiny-float 5.4s ease-in-out infinite;
   isolation: isolate;
 }
 .spiny-image {
@@ -126,7 +125,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
   animation: glitch-b 1.15s steps(1, end) 3;
 }
 .spiny-glow { position: absolute; inset: 18% 8% 8%; border-radius: 50%; background: var(--gradient); filter: blur(30px); opacity: .28; }
-@keyframes spiny-float { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
 @keyframes glitch-a {
   0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
   20% { clip-path: inset(8% 0 64% 0); transform: translate(-7px, 1px); }

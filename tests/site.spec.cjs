@@ -68,9 +68,9 @@ for (const viewport of viewports) {
       naturalHeight: image.naturalHeight,
       renderedRatio: image.getBoundingClientRect().width / image.getBoundingClientRect().height,
     }));
-    expect(spiny.naturalWidth).toBe(449);
-    expect(spiny.naturalHeight).toBe(425);
-    expect(spiny.renderedRatio).toBeCloseTo(449 / 425, 2);
+    expect(spiny.naturalWidth).toBe(1254);
+    expect(spiny.naturalHeight).toBe(1254);
+    expect(spiny.renderedRatio).toBeCloseTo(1, 2);
 
     const missingAnchors = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('a[href^="#"]'))
@@ -121,8 +121,8 @@ for (const viewport of viewports) {
     await expect(fireflyHeading).toBeVisible();
     await expect(fireflyHeading.locator('xpath=ancestor::article').getByText('PRIVATE')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Open Firefly III MCP on GitHub' })).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'HATS', level: 3 })).toBeVisible();
-    expect(await page.locator('a[href="https://github.com/X1pheR/hypershell-hats"]').count()).toBe(0);
+    await expect(page.getByRole('heading', { name: 'Hypershell Reach', level: 3 })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Open Hypershell Reach on GitHub' })).toHaveAttribute('href', 'https://github.com/X1pheR/hypershell-reach');
 
     await page.locator('#inside .section-heading').evaluate((element) => {
       element.scrollIntoView({ block: 'center' });
@@ -183,6 +183,7 @@ test('homepage glitch stops and social metadata is complete', async ({ page }) =
 
   const stage = page.locator('[data-spiny-glitch]');
   await expect(stage).toHaveClass(/is-glitching/);
+  expect(await stage.evaluate((element) => getComputedStyle(element).animationName)).toBe('none');
   await page.waitForTimeout(3800);
   await expect(stage).not.toHaveClass(/is-glitching/);
 
@@ -232,6 +233,7 @@ test('custom 404 preserves dead Spiny and returns HTTP 404', async ({ page }) =>
   expect(dimensions.naturalWidth).toBe(404);
   expect(dimensions.naturalHeight).toBe(377);
   expect(dimensions.renderedRatio).toBeCloseTo(404 / 377, 2);
+  expect(await page.locator('.error-spiny-stage').evaluate((element) => getComputedStyle(element).animationName)).toBe('none');
 
   await page.waitForTimeout(3800);
   await expect(page.locator('[data-spiny-glitch]')).not.toHaveClass(/is-glitching/);

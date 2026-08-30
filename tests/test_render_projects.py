@@ -21,12 +21,12 @@ class ProjectRenderingTests(unittest.TestCase):
 
     def test_private_repository_is_rendered_without_repository_link(self):
         html = render_projects.render_repository_card(
-            {"name": "hypershell-hats", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": True, "description": "Private tooling", "html_url": "https://github.com/X1pheR/hypershell-hats"},
-            {"hypershell-hats": "HATS"},
+            {"name": "private-tooling", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": True, "description": "Private tooling", "html_url": "https://github.com/X1pheR/private-tooling"},
+            {"private-tooling": "Private Tooling"},
         )
-        self.assertIn("HATS", html)
+        self.assertIn("Private Tooling", html)
         self.assertIn("PRIVATE", html)
-        self.assertNotIn("https://github.com/X1pheR/hypershell-hats", html)
+        self.assertNotIn("https://github.com/X1pheR/private-tooling", html)
 
     def test_public_repository_uses_description_override_and_github_link(self):
         html = render_projects.render_repository_card(

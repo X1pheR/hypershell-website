@@ -16,12 +16,12 @@
     "html_url": "https://github.com/X1pheR/dbackup-mcp"
   },
   {
-    "name": "hypershell-hats",
+    "name": "hypershell-reach",
     "homepage": "https://www.hypershell.eu/#projects",
     "archived": false,
-    "private": true,
-    "description": "Private Hypershell agent tooling.",
-    "html_url": "https://github.com/X1pheR/hypershell-hats"
+    "private": false,
+    "description": "Homelab Agent Tooling & Skills (HATS): managed agent tooling, bounded remote execution, task continuity, and shared skill discovery.",
+    "html_url": "https://github.com/X1pheR/hypershell-reach"
   },
   {
     "name": "resources",
