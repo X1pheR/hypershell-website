@@ -2,6 +2,7 @@
   "bitwarden-secrets-manager-mcp": "Bitwarden Secrets Manager MCP",
   "bws-secret-renderer": "BWS Secret Renderer",
   "dbackup-mcp": "DBackup MCP",
+  "firefly-iii-mcp": "Firefly III MCP",
   "homelab-agent-tooling-skills-mcp": "HATS",
   "mcp-server-filesystem": "MCP Server Filesystem",
   "ms365-mcp": "Microsoft 365 MCP",

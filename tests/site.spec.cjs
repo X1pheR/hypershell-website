@@ -117,6 +117,10 @@ for (const viewport of viewports) {
 
     await expect(page.getByRole('heading', { name: 'DBackup MCP', level: 3 })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Open DBackup MCP on GitHub' })).toHaveAttribute('href', 'https://github.com/X1pheR/dbackup-mcp');
+    const fireflyHeading = page.getByRole('heading', { name: 'Firefly III MCP', level: 3 });
+    await expect(fireflyHeading).toBeVisible();
+    await expect(fireflyHeading.locator('xpath=ancestor::article').getByText('PRIVATE')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Open Firefly III MCP on GitHub' })).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'HATS', level: 3 })).toBeVisible();
     expect(await page.locator('a[href="https://github.com/X1pheR/hypershell-hats"]').count()).toBe(0);
 

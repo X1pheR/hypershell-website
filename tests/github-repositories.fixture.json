@@ -30,5 +30,13 @@
     "private": false,
     "description": "Not a project card.",
     "html_url": "https://github.com/X1pheR/resources"
+  },
+  {
+    "name": "firefly-iii-mcp",
+    "homepage": "https://www.hypershell.eu/#projects",
+    "archived": false,
+    "private": true,
+    "description": "Strictly read-only, bounded MCP server for Firefly III financial analysis.",
+    "html_url": "https://github.com/X1pheR/firefly-iii-mcp"
   }
 ]
