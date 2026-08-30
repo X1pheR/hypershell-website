@@ -76,6 +76,20 @@ class ProjectRenderingTests(unittest.TestCase):
         self.assertEqual(overrides["bitwarden-secrets-manager-mcp"], "Bitwarden Secrets Manager MCP")
         self.assertNotIn("bws-secrets-mcp", overrides)
 
+    def test_firefly_private_project_metadata_preserves_identity_and_hides_repository_url(self):
+        root = Path(__file__).resolve().parents[1]
+        overrides = json.loads((root / "src" / "data" / "project-display-names.json").read_text())
+        repositories = json.loads((root / "tests" / "github-repositories.fixture.json").read_text())
+        firefly = next(repo for repo in repositories if repo["name"] == "firefly-iii-mcp")
+
+        self.assertEqual(overrides["firefly-iii-mcp"], "Firefly III MCP")
+        self.assertTrue(firefly["private"])
+        html = render_projects.render_repository_card(firefly, overrides)
+        self.assertIn("Firefly III MCP", html)
+        self.assertIn("PRIVATE", html)
+        self.assertIn("Strictly read-only, bounded MCP server", html)
+        self.assertNotIn(firefly["html_url"], html)
+
     def test_resolve_token_reads_protected_token_file_when_env_is_absent(self):
         with tempfile.TemporaryDirectory() as directory:
             token_file = Path(directory) / "github-token"
