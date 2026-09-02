@@ -1,4 +1,6 @@
 import json
+import os
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -105,3 +107,21 @@ class DeploymentScriptTests(unittest.TestCase):
         deploy = (Path(__file__).resolve().parents[1] / "scripts" / "deploy.sh").read_text()
         self.assertNotIn('cp -a "$DIST_DIR/." "$TARGET_DIR/"', deploy)
         self.assertIn('find "$DIST_DIR" -mindepth 1 -maxdepth 1 -exec cp -a -- {} "$TARGET_DIR/" \\;', deploy)
+
+    def test_deploy_preserves_runtime_tmp_and_removes_other_stale_files(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "site"
+            export_dir = target / "tmp" / "ticket"
+            export_dir.mkdir(parents=True)
+            exported = export_dir / "artifact.bin"
+            exported.write_bytes(b"bridge-export")
+            stale = target / "stale.txt"
+            stale.write_text("stale", encoding="utf-8")
+            env = dict(os.environ)
+            env["TARGET_DIR"] = str(target)
+            env["GITHUB_REPOSITORIES_FILE"] = str(root / "tests" / "github-repositories.fixture.json")
+            subprocess.run([str(root / "scripts" / "deploy.sh")], check=True, env=env)
+            self.assertEqual(exported.read_bytes(), b"bridge-export")
+            self.assertFalse(stale.exists())
+            self.assertTrue((target / "index.html").is_file())
