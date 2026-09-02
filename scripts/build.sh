@@ -64,6 +64,10 @@ robots.txt
 sitemap.xml
 social-card.svg
 social-card.png
+vendor/powerglitch-2.5.0.min.js
+vendor/powerglitch-LICENSE.txt
+fonts/oxanium-700-latin-v21.woff2
+fonts/OFL-Oxanium.txt
 "
 
 for relative_path in $required_files; do

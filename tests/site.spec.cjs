@@ -63,7 +63,7 @@ for (const viewport of viewports) {
       '.section-heading',
     ]);
 
-    const spiny = await page.locator('.hero .spiny-image-base').evaluate((image) => ({
+    const spiny = await page.locator('.hero .spiny-image-base:not([data-islayer])').evaluate((image) => ({
       naturalWidth: image.naturalWidth,
       naturalHeight: image.naturalHeight,
       renderedRatio: image.getBoundingClientRect().width / image.getBoundingClientRect().height,
@@ -96,10 +96,14 @@ for (const viewport of viewports) {
 
     const assetUrls = await page.evaluate(() => ({
       stylesheet: document.querySelector('link[rel="stylesheet"]')?.href,
-      script: document.querySelector('script[src]')?.src,
+      scripts: Array.from(document.querySelectorAll('script[src]')).map((script) => script.src),
     }));
     expect(assetUrls.stylesheet).not.toContain('__ASSET_VERSION__');
-    expect(assetUrls.script).not.toContain('__ASSET_VERSION__');
+    expect(assetUrls.scripts).toEqual(expect.arrayContaining([
+      expect.stringContaining('/vendor/powerglitch-2.5.0.min.js'),
+      expect.stringContaining('/site.js'),
+    ]));
+    for (const script of assetUrls.scripts) expect(script).not.toContain('__ASSET_VERSION__');
 
     if (viewport.width <= 760) {
       await expect(page.locator('.desktop-nav')).toBeHidden();
@@ -177,15 +181,74 @@ test('mobile navigation remains usable without JavaScript', async ({ browser }) 
   await context.close();
 });
 
-test('homepage glitch stops and social metadata is complete', async ({ page }) => {
+test('homepage hero glitches independently and keeps header static', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/', { waitUntil: 'networkidle' });
 
-  const stage = page.locator('[data-spiny-glitch]');
-  await expect(stage).toHaveClass(/is-glitching/);
-  expect(await stage.evaluate((element) => getComputedStyle(element).animationName)).toBe('none');
-  await page.waitForTimeout(3800);
-  await expect(stage).not.toHaveClass(/is-glitching/);
+  const spinyStack = page.locator('[data-hero-spiny-glitch]');
+  const titleStack = page.locator('[data-hero-title-glitch]');
+  await expect(spinyStack).toHaveAttribute('data-glitched', '1');
+  await expect(titleStack).toHaveAttribute('data-glitched', '1');
+  expect(await spinyStack.locator('[data-islayer]').count()).toBeGreaterThan(0);
+  expect(await titleStack.locator('[data-islayer]').count()).toBeGreaterThan(0);
+  expect(await page.locator('.site-header [data-islayer]').count()).toBe(0);
+
+  const cloneAccessibility = await page.locator('[data-hero-spiny-glitch] [data-islayer], [data-hero-title-glitch] [data-islayer]').evaluateAll(
+    (layers) => layers.map((layer) => layer.getAttribute('aria-hidden')),
+  );
+  expect(cloneAccessibility.every((value) => value === 'true')).toBe(true);
+
+  await page.evaluate(() => document.fonts.ready);
+  const wordmarkFont = await page.locator('#hero-title').evaluate((element) => ({
+    family: getComputedStyle(element).fontFamily,
+    weight: getComputedStyle(element).fontWeight,
+    loaded: document.fonts.check('700 32px Oxanium'),
+  }));
+  expect(wordmarkFont.family).toContain('Oxanium');
+  expect(wordmarkFont.weight).toBe('700');
+  expect(wordmarkFont.loaded).toBe(true);
+
+  await page.waitForFunction(
+    () => ['spiny', 'title'].includes(document.documentElement.dataset.heroGlitchActive),
+    null,
+    { timeout: 1600 },
+  );
+  const activeTarget = await page.evaluate(() => document.documentElement.dataset.heroGlitchActive);
+  expect(['spiny', 'title']).toContain(activeTarget);
+  await page.waitForFunction(() => !document.documentElement.dataset.heroGlitchActive, null, { timeout: 1200 });
+
+  const visualStyles = await page.evaluate(() => {
+    const dashboard = document.querySelector('.dashboard-link');
+    const social = document.querySelector('.footer-socials a');
+    const dashboardSvg = dashboard?.querySelector('svg');
+    const socialSvg = social?.querySelector('svg');
+    const pick = (element) => {
+      const style = getComputedStyle(element);
+      return {
+        color: style.color,
+        borderRadius: style.borderRadius,
+        backgroundImage: style.backgroundImage,
+        boxShadow: style.boxShadow,
+        transform: style.transform,
+      };
+    };
+    return {
+      dashboard: pick(dashboard),
+      social: pick(social),
+      dashboardFilter: getComputedStyle(dashboardSvg).filter,
+      socialFilter: getComputedStyle(socialSvg).filter,
+    };
+  });
+  expect(visualStyles.dashboard.color).toBe(visualStyles.social.color);
+  expect(visualStyles.dashboard.borderRadius).toBe(visualStyles.social.borderRadius);
+  expect(visualStyles.dashboard.backgroundImage).toBe(visualStyles.social.backgroundImage);
+  expect(visualStyles.dashboard.boxShadow).toBe(visualStyles.social.boxShadow);
+  expect(visualStyles.dashboardFilter).toBe(visualStyles.socialFilter);
+  expect(visualStyles.dashboard.transform).toBe('none');
+
+  const dashboard = page.locator('.dashboard-link');
+  await dashboard.hover();
+  expect(await dashboard.evaluate((element) => getComputedStyle(element).transform)).toBe('none');
 
   const metadata = await page.evaluate(() => ({
     image: document.querySelector('meta[property="og:image"]')?.content,
@@ -212,6 +275,20 @@ test('homepage glitch stops and social metadata is complete', async ({ page }) =
     image.src = '/social-card.png';
   }));
   expect(socialCard).toEqual({ width: 1200, height: 630 });
+});
+
+test('reduced motion disables recurring hero glitches', async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: 'reduce',
+  });
+  const page = await context.newPage();
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await expect(page.locator('[data-hero-spiny-glitch]')).not.toHaveAttribute('data-glitched', '1');
+  await expect(page.locator('[data-hero-title-glitch]')).not.toHaveAttribute('data-glitched', '1');
+  expect(await page.locator('.hero [data-islayer]').count()).toBe(0);
+  expect(await page.evaluate(() => document.documentElement.dataset.heroGlitchActive || '')).toBe('');
+  await context.close();
 });
 
 test('custom 404 preserves dead Spiny and returns HTTP 404', async ({ page }) => {
