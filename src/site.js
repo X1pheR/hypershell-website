@@ -37,16 +37,152 @@ document.querySelectorAll('[data-year]').forEach((element) => {
 });
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const spinyGlitch = document.querySelector('[data-spiny-glitch]');
+const legacySpinyGlitch = document.querySelector('[data-spiny-glitch]');
 
-if (spinyGlitch) {
+if (legacySpinyGlitch) {
   if (reducedMotion) {
-    spinyGlitch.classList.remove('is-glitching');
+    legacySpinyGlitch.classList.remove('is-glitching');
   } else {
     window.setTimeout(() => {
-      spinyGlitch.classList.remove('is-glitching');
+      legacySpinyGlitch.classList.remove('is-glitching');
     }, 3700);
   }
+}
+
+const heroSpinyGlitch = document.querySelector('[data-hero-spiny-glitch]');
+const heroTitleGlitch = document.querySelector('[data-hero-title-glitch]');
+
+if (!reducedMotion && heroSpinyGlitch instanceof HTMLElement && heroTitleGlitch instanceof HTMLElement && window.PowerGlitch) {
+  const spinyEffect = window.PowerGlitch.glitch(heroSpinyGlitch, {
+    createContainers: false,
+    playMode: 'manual',
+    hideOverflow: false,
+    timing: { duration: 560, iterations: 1 },
+    glitchTimeSpan: { start: 0.08, end: 0.92 },
+    shake: { velocity: 18, amplitudeX: 0.035, amplitudeY: 0.008 },
+    slice: { count: 5, velocity: 18, minHeight: 0.025, maxHeight: 0.14, hueRotate: false, cssFilters: '' },
+    pulse: false,
+  });
+
+  const titleEffect = window.PowerGlitch.glitch(heroTitleGlitch, {
+    createContainers: false,
+    playMode: 'manual',
+    hideOverflow: false,
+    timing: { duration: 440, iterations: 1 },
+    glitchTimeSpan: { start: 0.08, end: 0.92 },
+    shake: { velocity: 19, amplitudeX: 0.008, amplitudeY: 0.003 },
+    slice: { count: 4, velocity: 20, minHeight: 0.035, maxHeight: 0.16, hueRotate: false, cssFilters: '' },
+    pulse: false,
+  });
+
+  [heroSpinyGlitch, heroTitleGlitch].forEach((container) => {
+    container.querySelectorAll('[data-islayer]').forEach((layer) => layer.setAttribute('aria-hidden', 'true'));
+  });
+
+  function scaleSliceOffsets(container, scale) {
+    container.querySelectorAll('[data-islayer]').forEach((layer) => {
+      layer.getAnimations().forEach((animation) => {
+        const effect = animation.effect;
+        if (!(effect instanceof KeyframeEffect)) return;
+        const keyframes = effect.getKeyframes();
+        let changed = false;
+        const adjusted = keyframes.map((frame) => {
+          if (typeof frame.transform !== 'string') return frame;
+          const transform = frame.transform.replace(
+            /translate3d\((-?[\d.]+)%,\s*(-?[\d.]+)%,\s*0(?:px)?\)/,
+            (_, x, y) => {
+              changed = true;
+              return `translate3d(${(Number(x) * scale).toFixed(3)}%,${y}%,0)`;
+            },
+          );
+          return { ...frame, transform };
+        });
+        if (changed) effect.setKeyframes(adjusted);
+      });
+    });
+  }
+
+  const effects = [
+    { name: 'spiny', weight: 0.6, duration: 560, offsetScale: 0.72, container: heroSpinyGlitch, effect: spinyEffect },
+    { name: 'title', weight: 0.4, duration: 440, offsetScale: 0.16, container: heroTitleGlitch, effect: titleEffect },
+  ];
+  const effectsByName = Object.fromEntries(effects.map((effect) => [effect.name, effect]));
+  const heroSection = document.querySelector('.hero');
+  let heroGlitchTimer = 0;
+  let activeStopTimer = 0;
+  let heroIsVisible = true;
+  let startupPending = true;
+
+  function clearHeroGlitchTimers() {
+    window.clearTimeout(heroGlitchTimer);
+    window.clearTimeout(activeStopTimer);
+    heroGlitchTimer = 0;
+    activeStopTimer = 0;
+  }
+
+  function stopHeroGlitches() {
+    effects.forEach(({ effect }) => effect.stopGlitch());
+    delete document.documentElement.dataset.heroGlitchActive;
+  }
+
+  function scheduleHeroGlitch(delay) {
+    if (document.hidden || !heroIsVisible) return;
+    const wait = typeof delay === 'number' ? delay : 1000 + Math.random() * 2000;
+    heroGlitchTimer = window.setTimeout(runHeroGlitch, wait);
+  }
+
+  function playEffect(selected, onDone) {
+    stopHeroGlitches();
+    document.documentElement.dataset.heroGlitchActive = selected.name;
+    selected.effect.startGlitch();
+    scaleSliceOffsets(selected.container, selected.offsetScale);
+    activeStopTimer = window.setTimeout(() => {
+      selected.effect.stopGlitch();
+      delete document.documentElement.dataset.heroGlitchActive;
+      onDone();
+    }, selected.duration + 40);
+  }
+
+  function runHeroGlitch() {
+    const selected = Math.random() < effects[0].weight ? effects[0] : effects[1];
+    playEffect(selected, scheduleHeroGlitch);
+  }
+
+  function runStartupSequence() {
+    if (document.hidden || !heroIsVisible) return;
+    startupPending = false;
+    playEffect(effectsByName.spiny, () => {
+      heroGlitchTimer = window.setTimeout(() => {
+        playEffect(effectsByName.title, scheduleHeroGlitch);
+      }, 160 + Math.random() * 100);
+    });
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    clearHeroGlitchTimers();
+    stopHeroGlitches();
+    if (!document.hidden && heroIsVisible) {
+      if (startupPending) runStartupSequence();
+      else scheduleHeroGlitch();
+    }
+  });
+
+  if (heroSection instanceof HTMLElement && 'IntersectionObserver' in window) {
+    const heroGlitchObserver = new IntersectionObserver(([entry]) => {
+      const nextVisible = Boolean(entry?.isIntersecting);
+      if (nextVisible === heroIsVisible) return;
+      heroIsVisible = nextVisible;
+      clearHeroGlitchTimers();
+      stopHeroGlitches();
+      if (heroIsVisible && !document.hidden) {
+        if (startupPending) runStartupSequence();
+        else scheduleHeroGlitch();
+      }
+    }, { threshold: 0.08 });
+    heroGlitchObserver.observe(heroSection);
+  }
+
+  heroGlitchTimer = window.setTimeout(runStartupSequence, 180);
 }
 
 const revealGroups = [

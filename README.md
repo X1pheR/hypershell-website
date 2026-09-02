@@ -84,7 +84,7 @@ Set the deployment target explicitly through `TARGET_DIR`:
 TARGET_DIR=/path/to/site ./scripts/deploy.sh
 ```
 
-Deployment rebuilds the site, removes stale files from the target and copies the complete validated output. Historical timestamp backups are not retained; source rollback is handled through Git and a previous commit can be rebuilt and redeployed.
+Deployment rebuilds the site, removes stale publication files from the target and copies the complete validated output. A top-level `tmp/` directory is deliberately preserved because deployment may provide that subtree as short-lived HTTPS egress staging for the filesystem MCP; it is runtime state, not website source or build output. Historical timestamp backups are not retained; source rollback is handled through Git and a previous commit can be rebuilt and redeployed.
 
 The production web server serves the deployed static files. Static file updates do not require an application runtime or server restart.
 
