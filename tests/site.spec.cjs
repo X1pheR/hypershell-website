@@ -68,8 +68,8 @@ for (const viewport of viewports) {
       naturalHeight: image.naturalHeight,
       renderedRatio: image.getBoundingClientRect().width / image.getBoundingClientRect().height,
     }));
-    expect(spiny.naturalWidth).toBe(1254);
-    expect(spiny.naturalHeight).toBe(1254);
+    expect(spiny.naturalWidth).toBe(512);
+    expect(spiny.naturalHeight).toBe(512);
     expect(spiny.renderedRatio).toBeCloseTo(1, 2);
 
     const missingAnchors = await page.evaluate(() => {
@@ -306,10 +306,10 @@ test('custom 404 preserves dead Spiny and returns HTTP 404', async ({ page }) =>
     naturalHeight: image.naturalHeight,
     renderedRatio: image.getBoundingClientRect().width / image.getBoundingClientRect().height,
   }));
-  expect(dimensions.source).toBe('/dead-spiny.png');
-  expect(dimensions.naturalWidth).toBe(404);
-  expect(dimensions.naturalHeight).toBe(377);
-  expect(dimensions.renderedRatio).toBeCloseTo(404 / 377, 2);
+  expect(dimensions.source).toBe('/spiny-dead.png');
+  expect(dimensions.naturalWidth).toBe(512);
+  expect(dimensions.naturalHeight).toBe(512);
+  expect(dimensions.renderedRatio).toBeCloseTo(1, 2);
   expect(await page.locator('.error-spiny-stage').evaluate((element) => getComputedStyle(element).animationName)).toBe('none');
 
   await page.waitForTimeout(3800);

@@ -285,7 +285,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .error-layout { position: relative; display: grid; grid-template-columns: minmax(240px, .75fr) minmax(0, 1fr); align-items: center; width: min(100%, 990px); gap: clamp(2.25rem, 7vw, 6rem); }
 .error-visual { position: relative; display: grid; place-items: center; min-height: 380px; }
 .error-visual::after { content: ""; position: absolute; inset: 72% 18% auto; height: 24px; border-radius: 50%; background: rgb(0 0 0 / .42); filter: blur(14px); transform: scaleX(.78); }
-.error-spiny-stage { width: clamp(220px, 28vw, 330px); aspect-ratio: 404 / 377; margin: 0; }
+.error-spiny-stage { width: clamp(220px, 28vw, 330px); aspect-ratio: 1 / 1; margin: 0; }
 .error-spiny-stage .spiny-glow { inset: 16% 4% 4%; opacity: .34; filter: blur(40px); }
 .error-panel { width: 100%; padding: clamp(2rem, 5vw, 3.5rem); }
 .error-panel .eyebrow { margin-bottom: .85rem; }

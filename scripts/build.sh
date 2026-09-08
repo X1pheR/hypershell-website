@@ -50,7 +50,7 @@ index.html
 styles.css
 site.js
 spiny.png
-dead-spiny.png
+spiny-dead.png
 homesight.svg
 me.jpg
 favicon.ico
@@ -62,7 +62,6 @@ web-app-manifest-192x192.png
 web-app-manifest-512x512.png
 robots.txt
 sitemap.xml
-social-card.svg
 social-card.png
 vendor/powerglitch-2.5.0.min.js
 vendor/powerglitch-LICENSE.txt
