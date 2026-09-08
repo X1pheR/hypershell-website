@@ -185,10 +185,44 @@ if (!reducedMotion && heroSpinyGlitch instanceof HTMLElement && heroTitleGlitch 
   heroGlitchTimer = window.setTimeout(runStartupSequence, 180);
 }
 
+const projectFilterBar = document.querySelector('[data-project-filters]');
+const projectFilterStatus = document.querySelector('[data-project-filter-status]');
+const projectFilterButtons = Array.from(document.querySelectorAll('[data-project-filter]'));
+const repositoryCards = Array.from(document.querySelectorAll('.repository-card[data-project-category]'));
+
+if (projectFilterBar instanceof HTMLElement && projectFilterButtons.length && repositoryCards.length) {
+  projectFilterBar.hidden = false;
+
+  function applyProjectFilter(category) {
+    let visibleCount = 0;
+    repositoryCards.forEach((card) => {
+      const visible = category === 'all' || card.dataset.projectCategory === category;
+      card.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+
+    projectFilterButtons.forEach((button) => {
+      const active = button.dataset.projectFilter === category;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+
+    if (projectFilterStatus) {
+      projectFilterStatus.textContent = `Showing ${visibleCount} of ${repositoryCards.length} projects`;
+    }
+  }
+
+  projectFilterButtons.forEach((button) => {
+    button.addEventListener('click', () => applyProjectFilter(button.dataset.projectFilter || 'all'));
+  });
+}
+
 const revealGroups = [
   ['.section-heading', 0],
   ['.domain-card', 90],
+  ['.why-copy, .why-point', 100],
   ['.project-card', 110],
+  ['.project-activity', 110],
   ['.architecture-stack, .principles', 130],
   ['.about-copy, .profile-card', 140],
 ];

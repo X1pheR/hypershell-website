@@ -4,7 +4,7 @@
 
 Static public website for `hypershell.eu` and `www.hypershell.eu`.
 
-Hypershell is Ronald's personal homelab and connected home environment. The site presents its major domains, selected projects, simplified public architecture and visual identity without exposing internal topology or operational details.
+Hypershell is Ronald's personal homelab and connected home environment. The site presents its major domains, design rationale, simplified public architecture, core initiatives and maintained software without exposing internal topology or operational details.
 
 ## Design
 
@@ -12,7 +12,7 @@ The canonical, agent-readable design system is documented in [`DESIGN.md`](DESIG
 
 - dark-only Hypershell neon branding;
 - no runtime third-party dependencies;
-- responsive one-page layout;
+- responsive homepage plus generated static project detail pages;
 - semantic HTML and keyboard-visible focus states;
 - reduced-motion support;
 - custom branded 404 page;
@@ -36,7 +36,7 @@ hypershell-website/
 ./scripts/build.sh
 ```
 
-The build has no package-manager dependency. It fetches current GitHub repository metadata at build time, renders selected Hypershell projects into the static site, creates `dist/`, derives a content-based asset version and validates every required output asset.
+The production build has no package-manager dependency. It fetches current GitHub repository metadata and latest public releases at build time, renders the homepage plus static project detail pages, generates the only published sitemap from current project metadata, creates `dist/`, derives a content-based asset version and validates every required output asset and the `security.txt` expiry horizon.
 
 Live project discovery requires authenticated GitHub repository metadata access. The build accepts `GH_TOKEN` or `GITHUB_TOKEN`; alternatively it reads a protected token file from `GITHUB_TOKEN_FILE` or, by default, `.runtime-secrets/github-token` when that file exists. `.runtime-secrets/` is ignored by Git. The token is used only for the GitHub API request and is never written to `dist/`. A build fails if authenticated repository metadata cannot be retrieved.
 
@@ -46,9 +46,21 @@ A repository is included automatically when it is active and its GitHub **Websit
 https://www.hypershell.eu/#projects
 ```
 
-Public repositories receive a GitHub link. Private repositories may expose their selected name, description and `PRIVATE` visibility label but never their repository URL. Selected repositories must have a non-empty GitHub description or the build fails. GitHub-backed project cards are sorted alphabetically by their display name; display-name exceptions live in `src/data/project-display-names.json`, otherwise the repository name is humanized. Non-GitHub projects remain supported through `src/data/manual-projects.json` and keep their declared order.
+The homepage flows from the lab domains through **Why Hypershell** and the simplified public architecture before reaching Projects. The Projects section renders non-GitHub work from `src/data/manual-projects.json` as **Core initiatives** and selected repositories as **Maintained software**. Dynamic counts are derived at build time for the six public domains, core initiatives, maintained repositories and combined project total. Public repositories receive an explicit GitHub link. Private repositories may expose their selected name, description and neutral `PRIVATE` visibility label but never their repository URL. Repository visibility is metadata, not lifecycle status. Selected repositories must have a non-empty GitHub description or the build fails.
 
-For deterministic tests or an explicitly pre-fetched metadata input, set `GITHUB_REPOSITORIES_FILE` to a JSON file with GitHub repository objects.
+GitHub remains the source for repository name, description, visibility, URL and public release/update timestamps. `src/data/project-presentation.json` is the single local presentation owner for safe categories, display-name exceptions, explicit includes, presentation order, provenance labels and activity exclusions; it does not duplicate GitHub descriptions or URLs. Every core initiative and maintained repository receives a stable homepage fragment and a generated `/projects/<slug>/` detail page. Private repository URLs and private activity are never emitted. Recent activity prefers the latest public GitHub Release and falls back to repository update time; the website repository is excluded from this block to avoid self-referential noise.
+
+For deterministic tests or explicitly pre-fetched metadata, set `GITHUB_REPOSITORIES_FILE` to a JSON file with GitHub repository objects and optionally `GITHUB_RELEASES_FILE` to a mapping of repository names to release objects.
+
+### Brand derivatives
+
+The accepted H-core masterbrand is used for official website identity; Spiny remains the mascot and homepage/404 personality layer. Web-specific PNG/ICO/WebP/JPEG derivatives are generated from accepted sources without modifying the canonical brand workspace:
+
+```sh
+BRAND_ROOT=/path/to/hypershell-brand ./scripts/sync-brand-assets.sh
+```
+
+`src/data/brand-assets.json` records the accepted source paths and hashes used for those derivatives. This maintenance step uses the repository's digest-pinned Playwright image, but the resulting production website has no Node.js or browser runtime dependency.
 
 ## Feedback and contributions
 
@@ -70,7 +82,9 @@ Tests are project-specific and run in an ephemeral digest-pinned Playwright cont
 
 GitHub CI runs the same repository test entry point. Browser-test dependencies are locked, Dependabot tracks npm and GitHub Actions updates, external Actions are pinned to full commit SHAs, GitHub CodeQL default setup scans the maintained JavaScript/Python/workflow source, and OpenSSF Scorecard publishes an independent repository-security signal.
 
-The suite covers project selection/rendering, responsive layout, overflow, mobile navigation with and without JavaScript, keyboard focus restoration, mascot proportions, glitch lifecycle, project-card consistency, social metadata, the custom 404 response and WCAG A/AA checks through Axe.
+The suite covers project selection/rendering, consolidated presentation metadata, provenance, generated detail pages and sitemap, release-first public activity, dynamic counts/categories/filtering, responsive layout and sticky mobile filters, overflow, mobile navigation with and without JavaScript, retained dashboard/mobile-blur contracts, keyboard focus restoration, brand/mascot delivery, intermittent hero glitch lifecycle, manifest/security/structured metadata, project-card consistency, social metadata, the custom 404 response and WCAG A/AA checks through Axe.
+
+The public asset set includes a dark Hypershell web-app manifest and `/.well-known/security.txt`. The favicon and installable-app icon set is derived from the accepted H-core masterbrand; the previous SVG wrapper around an embedded raster image is intentionally not published. The hero prefers an optimized Spiny WebP derivative with PNG fallback, and social metadata uses an optimized 1200×630 JPEG derivative.
 
 ## Deploy
 

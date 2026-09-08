@@ -1,0 +1,86 @@
+{
+  "asuswrt-mcp": {
+    "display_name": "ASUSWRT MCP",
+    "category": "Infrastructure",
+    "include": true,
+    "provenance": "Maintained downstream"
+  },
+  "bitwarden-secrets-manager-mcp": {
+    "display_name": "Bitwarden Secrets Manager MCP",
+    "category": "Identity & resilience",
+    "provenance": "Hypershell-maintained"
+  },
+  "dbackup-mcp": {
+    "display_name": "DBackup MCP",
+    "category": "Operations",
+    "provenance": "Hypershell-maintained"
+  },
+  "firefly-iii-mcp": {
+    "display_name": "Firefly III MCP",
+    "category": "Applications",
+    "provenance": "Hypershell-maintained"
+  },
+  "hypershell-reach": {
+    "category": "Agentic AI",
+    "order": 10,
+    "provenance": "Hypershell-maintained"
+  },
+  "hypershell-website": {
+    "category": "Applications",
+    "provenance": "Hypershell-maintained",
+    "exclude_from_activity": true
+  },
+  "mcp-server-docker": {
+    "category": "Infrastructure",
+    "provenance": "Maintained fork"
+  },
+  "mcp-server-filesystem": {
+    "display_name": "MCP Server Filesystem",
+    "category": "Infrastructure",
+    "include": true,
+    "provenance": "Maintained downstream"
+  },
+  "ms365-mcp": {
+    "display_name": "Microsoft 365 MCP",
+    "category": "Applications",
+    "provenance": "Hypershell-maintained"
+  },
+  "nexterm-mcp": {
+    "category": "Infrastructure",
+    "provenance": "Hypershell-maintained"
+  },
+  "nl-health-sources-mcp": {
+    "display_name": "NL Health Sources MCP",
+    "category": "Knowledge",
+    "include": true,
+    "provenance": "Hypershell-maintained"
+  },
+  "pocket-id-mcp": {
+    "display_name": "Pocket ID MCP",
+    "category": "Identity & resilience",
+    "provenance": "Hypershell-maintained"
+  },
+  "proxmox-ultimate-updater-notify": {
+    "category": "Operations",
+    "provenance": "Hypershell-maintained"
+  },
+  "qmd-mcp": {
+    "display_name": "QMD MCP",
+    "category": "Knowledge",
+    "provenance": "Hypershell-maintained"
+  },
+  "romm-mcp": {
+    "display_name": "RomM MCP",
+    "category": "Applications",
+    "provenance": "Hypershell-maintained"
+  },
+  "secrets-delivery-manager": {
+    "category": "Identity & resilience",
+    "provenance": "Hypershell-maintained"
+  },
+  "technitium-mcp": {
+    "category": "Infrastructure",
+    "include": true,
+    "provenance": "Hardened distribution"
+  }
+}

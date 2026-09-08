@@ -5,7 +5,8 @@
     "archived": false,
     "private": false,
     "description": "Secure, value-blind Model Context Protocol server for Bitwarden Secrets Manager using the official Python SDK.",
-    "html_url": "https://github.com/X1pheR/bitwarden-secrets-manager-mcp"
+    "html_url": "https://github.com/X1pheR/bitwarden-secrets-manager-mcp",
+    "pushed_at": "2026-09-05T00:30:33Z"
   },
   {
     "name": "dbackup-mcp",
@@ -13,7 +14,8 @@
     "archived": false,
     "private": false,
     "description": "Backup management MCP server.",
-    "html_url": "https://github.com/X1pheR/dbackup-mcp"
+    "html_url": "https://github.com/X1pheR/dbackup-mcp",
+    "pushed_at": "2026-08-20T10:06:01Z"
   },
   {
     "name": "hypershell-reach",
@@ -21,7 +23,8 @@
     "archived": false,
     "private": false,
     "description": "Homelab Agent Tooling & Skills (HATS): managed agent tooling, bounded remote execution, task continuity, and shared skill discovery.",
-    "html_url": "https://github.com/X1pheR/hypershell-reach"
+    "html_url": "https://github.com/X1pheR/hypershell-reach",
+    "pushed_at": "2026-09-05T13:57:19Z"
   },
   {
     "name": "resources",
@@ -29,7 +32,8 @@
     "archived": false,
     "private": false,
     "description": "Not a project card.",
-    "html_url": "https://github.com/X1pheR/resources"
+    "html_url": "https://github.com/X1pheR/resources",
+    "pushed_at": "2026-08-26T14:48:35Z"
   },
   {
     "name": "firefly-iii-mcp",
@@ -37,6 +41,16 @@
     "archived": false,
     "private": true,
     "description": "Strictly read-only, bounded MCP server for Firefly III financial analysis.",
-    "html_url": "https://github.com/X1pheR/firefly-iii-mcp"
+    "html_url": "https://github.com/X1pheR/firefly-iii-mcp",
+    "pushed_at": "2026-08-31T08:05:46Z"
+  },
+  {
+    "name": "hypershell-website",
+    "homepage": "https://www.hypershell.eu/#projects",
+    "archived": false,
+    "private": false,
+    "description": "Static public website for the Hypershell homelab and connected home environment.",
+    "html_url": "https://github.com/X1pheR/hypershell-website",
+    "pushed_at": "2026-09-08T20:00:00Z"
   }
 ]

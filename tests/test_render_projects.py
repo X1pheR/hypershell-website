@@ -3,94 +3,162 @@ import os
 import subprocess
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
-
 import sys
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 import render_projects
 
 
+def repo(name, **overrides):
+    base = {
+        "name": name,
+        "homepage": "https://www.hypershell.eu/#projects",
+        "archived": False,
+        "private": False,
+        "description": f"{name} description",
+        "html_url": f"https://github.com/X1pheR/{name}",
+        "pushed_at": "2026-09-01T10:00:00Z",
+    }
+    base.update(overrides)
+    return base
+
+
 class ProjectRenderingTests(unittest.TestCase):
-    def test_selects_only_active_repositories_with_exact_project_homepage(self):
+    def test_selects_exact_homepage_or_explicit_include_and_excludes_archived(self):
         repos = [
-            {"name": "included", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "Included", "html_url": "https://github.com/X1pheR/included"},
-            {"name": "wrong-homepage", "homepage": "https://www.hypershell.eu", "archived": False, "private": False, "description": "No", "html_url": "https://github.com/X1pheR/wrong-homepage"},
-            {"name": "archived", "homepage": "https://www.hypershell.eu/#projects", "archived": True, "private": False, "description": "No", "html_url": "https://github.com/X1pheR/archived"},
+            repo("normal"),
+            repo("explicit", homepage=""),
+            repo("wrong", homepage="https://www.hypershell.eu"),
+            repo("archived", archived=True),
         ]
-        selected = render_projects.select_repositories(repos, {})
-        self.assertEqual([repo["name"] for repo in selected], ["included"])
+        presentation = {"explicit": {"include": True}}
+        selected = render_projects.select_repositories(repos, presentation)
+        self.assertEqual([item["name"] for item in selected], ["explicit", "normal"])
 
-    def test_private_repository_is_rendered_without_repository_link(self):
-        html = render_projects.render_repository_card(
-            {"name": "private-tooling", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": True, "description": "Private tooling", "html_url": "https://github.com/X1pheR/private-tooling"},
-            {"private-tooling": "Private Tooling"},
-        )
-        self.assertIn("Private Tooling", html)
-        self.assertIn("PRIVATE", html)
-        self.assertNotIn("https://github.com/X1pheR/private-tooling", html)
+    def test_consolidated_presentation_controls_display_category_order_and_provenance(self):
+        repos = [repo("alpha"), repo("zeta")]
+        presentation = {
+            "alpha": {"display_name": "Zulu", "category": "Knowledge", "provenance": "Hypershell-maintained"},
+            "zeta": {"display_name": "Alpha", "category": "Infrastructure", "provenance": "Maintained fork", "order": 10},
+        }
+        selected = render_projects.select_repositories(repos, presentation)
+        self.assertEqual([item["name"] for item in selected], ["zeta", "alpha"])
+        rendered = render_projects.render_repository_card(selected[0], presentation)
+        self.assertIn("Alpha", rendered)
+        self.assertIn("Infrastructure", rendered)
+        self.assertIn("Maintained fork", rendered)
 
-    def test_public_repository_uses_description_override_and_github_link(self):
-        html = render_projects.render_repository_card(
-            {"name": "dbackup-mcp", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "Backup API", "html_url": "https://github.com/X1pheR/dbackup-mcp"},
-            {"dbackup-mcp": "DBackup MCP"},
-        )
-        self.assertIn("DBackup MCP", html)
-        self.assertIn("Backup API", html)
-        self.assertIn("PUBLIC", html)
-        self.assertIn('href="https://github.com/X1pheR/dbackup-mcp"', html)
+    def test_private_repository_hides_repository_url_but_keeps_public_detail_route(self):
+        item = repo("private-tool", private=True)
+        rendered = render_projects.render_repository_card(item, {"private-tool": {"display_name": "Private Tool"}})
+        self.assertIn("PRIVATE", rendered)
+        self.assertIn('href="/projects/private-tool/"', rendered)
+        self.assertNotIn(item["html_url"], rendered)
+
+    def test_public_repository_has_deep_link_and_explicit_github_action(self):
+        item = repo("dbackup-mcp", description="Backup API")
+        rendered = render_projects.render_repository_card(item, {"dbackup-mcp": {"display_name": "DBackup MCP", "category": "Operations"}})
+        self.assertIn('id="dbackup-mcp"', rendered)
+        self.assertIn('href="/projects/dbackup-mcp/"', rendered)
+        self.assertIn('href="https://github.com/X1pheR/dbackup-mcp"', rendered)
+        self.assertIn("View on GitHub", rendered)
+
+    def test_raw_github_topics_are_not_published(self):
+        item = repo("tool", topics=["secret-topic"])
+        rendered = render_projects.render_repository_card(item, {"tool": {"category": "Infrastructure"}})
+        self.assertIn('data-project-category="infrastructure"', rendered)
+        self.assertNotIn("secret-topic", rendered)
+
+    def test_filter_buttons_use_curated_categories(self):
+        repos = [repo("a"), repo("b"), repo("c")]
+        presentation = {"a": {"category": "Infrastructure"}, "b": {"category": "Operations"}, "c": {"category": "Infrastructure"}}
+        rendered = render_projects.render_filter_buttons(repos, presentation)
+        self.assertIn("All <span>3</span>", rendered)
+        self.assertIn("Infrastructure <span>2</span>", rendered)
+        self.assertIn("Operations <span>1</span>", rendered)
+
+    def test_recent_activity_prefers_releases_excludes_private_and_excluded_repo(self):
+        repos = [
+            repo("release-project", pushed_at="2026-09-01T10:00:00Z"),
+            repo("push-project", pushed_at="2026-09-05T10:00:00Z"),
+            repo("hypershell-website", pushed_at="2026-09-08T10:00:00Z"),
+            repo("private-project", private=True, pushed_at="2026-09-09T10:00:00Z"),
+        ]
+        releases = {"release-project": {"tag_name": "v2.0.0", "published_at": "2026-09-07T10:00:00Z", "html_url": "https://github.com/X1pheR/release-project/releases/tag/v2.0.0"}}
+        presentation = {"hypershell-website": {"exclude_from_activity": True}}
+        rendered = render_projects.render_recent_activity(repos, releases, presentation)
+        self.assertIn("Latest release", rendered)
+        self.assertIn("v2.0.0", rendered)
+        self.assertIn("Push Project", rendered)
+        self.assertNotIn("Hypershell Website", rendered)
+        self.assertNotIn("Private Project", rendered)
+        self.assertLess(rendered.index("Release Project"), rendered.index("Push Project"))
+
+    def test_software_json_ld_contains_public_repositories_only_and_valid_ampersands(self):
+        repos = [repo("public", description="Tools & skills"), repo("private", private=True)]
+        raw = render_projects.render_software_json_ld(repos, {"public": {"category": "Identity & resilience"}})
+        data = json.loads(raw)
+        self.assertEqual(len(data["itemListElement"]), 1)
+        item = data["itemListElement"][0]["item"]
+        self.assertEqual(item["description"], "Tools & skills")
+        self.assertEqual(item["applicationCategory"], "Identity & resilience")
+        self.assertEqual(item["url"], "https://www.hypershell.eu/projects/public/")
 
     def test_repository_fields_are_html_escaped(self):
-        html = render_projects.render_repository_card(
-            {"name": "unsafe", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": '<script>alert("x")</script>', "html_url": "https://github.com/X1pheR/unsafe"},
-            {},
-        )
-        self.assertNotIn("<script>", html)
-        self.assertIn("&lt;script&gt;", html)
+        item = repo("unsafe", description='<script>alert("x")</script>')
+        rendered = render_projects.render_repository_card(item, {})
+        self.assertNotIn("<script>", rendered)
+        self.assertIn("&lt;script&gt;", rendered)
 
-    def test_manual_cards_are_kept_alongside_github_cards(self):
-        manual = [{"name": "HomeSight", "description": "Architecture insight", "status": "OPERATIONAL", "meta": "Architecture & inventory"}]
-        html = render_projects.render_project_cards(manual, [], {})
-        self.assertIn("HomeSight", html)
-        self.assertIn("Architecture insight", html)
-
-    def test_humanize_repo_name_is_default_when_no_override_exists(self):
-        self.assertEqual(render_projects.display_name("pocket-id-mcp", {}), "Pocket ID MCP")
-        self.assertEqual(render_projects.display_name("hypershell-infrastructure", {}), "Hypershell Infrastructure")
-
-    def test_selected_repositories_sort_by_display_name(self):
-        repos = [
-            {"name": "alpha-tool", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "Alpha repo", "html_url": "https://github.com/X1pheR/alpha-tool"},
-            {"name": "zeta-tool", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "Zeta repo", "html_url": "https://github.com/X1pheR/zeta-tool"},
-        ]
-        overrides = {"alpha-tool": "Zulu", "zeta-tool": "Alpha"}
-        selected = render_projects.select_repositories(repos, overrides)
-        self.assertEqual([repo["name"] for repo in selected], ["zeta-tool", "alpha-tool"])
+    def test_manual_card_has_stable_deep_link(self):
+        rendered = render_projects.render_manual_card({"name": "HomeSight", "description": "Architecture insight", "status": "Operational", "meta": "Architecture & inventory"})
+        self.assertIn('id="homesight"', rendered)
+        self.assertIn('href="/projects/homesight/"', rendered)
 
     def test_selected_repository_requires_description(self):
-        repo = {"name": "missing-description", "homepage": "https://www.hypershell.eu/#projects", "archived": False, "private": False, "description": "  ", "html_url": "https://github.com/X1pheR/missing-description"}
         with self.assertRaisesRegex(ValueError, "missing a GitHub description"):
-            render_projects.render_project_cards([], [repo], {})
+            render_projects.select_repositories([repo("missing", description="  ")], {})
 
-    def test_bitwarden_secrets_manager_product_metadata_uses_new_identity_only(self):
-        root = Path(__file__).resolve().parents[1]
-        overrides = json.loads((root / "src" / "data" / "project-display-names.json").read_text())
-        self.assertEqual(overrides["bitwarden-secrets-manager-mcp"], "Bitwarden Secrets Manager MCP")
-        self.assertNotIn("bws-secrets-mcp", overrides)
+    def test_project_detail_pages_and_sitemap_are_generated(self):
+        manual = [{"name": "HomeSight", "description": "Architecture insight", "status": "Operational", "meta": "Architecture & inventory"}]
+        repositories = [repo("dbackup-mcp")]
+        presentation = {"dbackup-mcp": {"display_name": "DBackup MCP", "category": "Operations", "provenance": "Hypershell-maintained"}}
+        releases = {"dbackup-mcp": {"tag_name": "v1.0.0", "published_at": "2026-09-06T10:00:00Z", "html_url": "https://github.com/X1pheR/dbackup-mcp/releases/tag/v1.0.0"}}
+        with tempfile.TemporaryDirectory() as directory:
+            pages = render_projects.write_detail_pages(directory, (ROOT / "src/project.html").read_text(), manual, repositories, releases, presentation)
+            render_projects.render_sitemap(Path(directory) / "sitemap.xml", pages, repositories)
+            self.assertTrue((Path(directory) / "projects/homesight/index.html").is_file())
+            detail = (Path(directory) / "projects/dbackup-mcp/index.html").read_text()
+            self.assertIn("DBackup MCP", detail)
+            self.assertIn("v1.0.0", detail)
+            sitemap = (Path(directory) / "sitemap.xml").read_text()
+            self.assertIn("https://www.hypershell.eu/projects/homesight/", sitemap)
+            self.assertIn("<lastmod>2026-09-01</lastmod>", sitemap)
 
-    def test_firefly_private_project_metadata_preserves_identity_and_hides_repository_url(self):
-        root = Path(__file__).resolve().parents[1]
-        overrides = json.loads((root / "src" / "data" / "project-display-names.json").read_text())
-        repositories = json.loads((root / "tests" / "github-repositories.fixture.json").read_text())
-        firefly = next(repo for repo in repositories if repo["name"] == "firefly-iii-mcp")
+    def test_presentation_config_replaces_old_parallel_files(self):
+        data_dir = ROOT / "src/data"
+        presentation = json.loads((data_dir / "project-presentation.json").read_text())
+        self.assertEqual(presentation["hypershell-reach"]["order"], 10)
+        self.assertTrue(presentation["technitium-mcp"]["include"])
+        for old in ["project-categories.json", "project-includes.json", "project-order.json", "project-display-names.json"]:
+            self.assertFalse((data_dir / old).exists())
 
-        self.assertEqual(overrides["firefly-iii-mcp"], "Firefly III MCP")
-        self.assertTrue(firefly["private"])
-        html = render_projects.render_repository_card(firefly, overrides)
-        self.assertIn("Firefly III MCP", html)
-        self.assertIn("PRIVATE", html)
-        self.assertIn("Strictly read-only, bounded MCP server", html)
-        self.assertNotIn(firefly["html_url"], html)
+    def test_sitemap_is_generated_not_hand_authored_in_public_assets(self):
+        self.assertFalse((ROOT / "public/sitemap.xml").exists())
+
+    def test_brand_derivative_provenance_points_to_accepted_sources(self):
+        provenance = json.loads((ROOT / "src/data/brand-assets.json").read_text())
+        self.assertEqual(provenance["masterbrand"]["sha256"], "ef3c0d8226849f2a4749fbf5f6f9fbd7c146db01ce94383041d04ea1ae536d33")
+        self.assertEqual(provenance["spiny"]["sha256"], "3436c7f849ecc678b44bc547fe72a64c00f76bab64ad34170d63273fbec16688")
+        self.assertTrue((ROOT / "public/spiny.webp").is_file())
+        self.assertTrue((ROOT / "public/masterbrand-96.png").is_file())
+
+    def test_security_txt_has_more_than_ninety_days_remaining(self):
+        completed = subprocess.run([sys.executable, str(ROOT / "scripts/check_security_metadata.py"), str(ROOT / "public/.well-known/security.txt")], capture_output=True, text=True)
+        self.assertEqual(completed.returncode, 0, completed.stderr)
 
     def test_resolve_token_reads_protected_token_file_when_env_is_absent(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -99,29 +167,28 @@ class ProjectRenderingTests(unittest.TestCase):
             self.assertEqual(render_projects.resolve_token({}, token_file), "example-token")
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 class DeploymentScriptTests(unittest.TestCase):
     def test_deploy_does_not_preserve_metadata_on_target_directory(self):
-        deploy = (Path(__file__).resolve().parents[1] / "scripts" / "deploy.sh").read_text()
+        deploy = (ROOT / "scripts/deploy.sh").read_text()
         self.assertNotIn('cp -a "$DIST_DIR/." "$TARGET_DIR/"', deploy)
         self.assertIn('find "$DIST_DIR" -mindepth 1 -maxdepth 1 -exec cp -a -- {} "$TARGET_DIR/" \\;', deploy)
 
     def test_deploy_preserves_runtime_tmp_and_removes_other_stale_files(self):
-        root = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "site"
-            export_dir = target / "tmp" / "ticket"
-            export_dir.mkdir(parents=True)
-            exported = export_dir / "artifact.bin"
-            exported.write_bytes(b"bridge-export")
-            stale = target / "stale.txt"
-            stale.write_text("stale", encoding="utf-8")
+            export_dir = target / "tmp/ticket"; export_dir.mkdir(parents=True)
+            exported = export_dir / "artifact.bin"; exported.write_bytes(b"bridge-export")
+            stale = target / "stale.txt"; stale.write_text("stale", encoding="utf-8")
             env = dict(os.environ)
             env["TARGET_DIR"] = str(target)
-            env["GITHUB_REPOSITORIES_FILE"] = str(root / "tests" / "github-repositories.fixture.json")
-            subprocess.run([str(root / "scripts" / "deploy.sh")], check=True, env=env)
+            env["GITHUB_REPOSITORIES_FILE"] = str(ROOT / "tests/github-repositories.fixture.json")
+            env["GITHUB_RELEASES_FILE"] = str(ROOT / "tests/github-releases.fixture.json")
+            subprocess.run([str(ROOT / "scripts/deploy.sh")], check=True, env=env)
             self.assertEqual(exported.read_bytes(), b"bridge-export")
             self.assertFalse(stale.exists())
-            self.assertTrue((target / "index.html").is_file())
+            self.assertTrue((target / "projects/hypershell-reach/index.html").is_file())
+            self.assertGreater((target / "sitemap.xml").read_text().count("<url>"), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
