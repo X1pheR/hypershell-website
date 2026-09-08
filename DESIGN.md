@@ -219,8 +219,8 @@ Avoid mixing severe square corners into established card groups. Do not over-rou
 
 Spiny assets have fixed intrinsic proportions:
 
-- normal Spiny: **449:425**;
-- dead Spiny: **404:377**.
+- normal Spiny: **1:1**;
+- dead Spiny: **1:1**.
 
 Render both with `object-fit: contain`. The profile portrait uses a square container and `object-fit: cover`.
 
