@@ -12,7 +12,7 @@ colors:
   text-primary: "#E2E8F0"
   text-heading: "#F1F5F9"
   text-muted: "#94A3B8"
-  text-dim: "#64748B"
+  text-dim: "#6B7C95"
   border: "#4C5C80"
   white: "#FFFFFF"
 typography:
@@ -147,7 +147,7 @@ Hypershell is a personal homelab and connected-home environment. Its public webs
 
 The visual identity is **dark-only**, spacious and high-contrast. Neon pink, blue and cyan create energy and recognisability, but they are accents rather than background fills for large content areas. Structural clarity, readable content and responsive behaviour take precedence over decorative effects.
 
-Spiny is the mascot and primary visual signature. The normal Spiny asset belongs in branding and the homepage hero; the dead Spiny variant belongs on the 404 page. Mascot artwork must retain its source aspect ratio and must not be recoloured, redrawn or visually distorted without an explicit design decision.
+The accepted Hypershell H-core masterbrand is the official product identity and is used for header identity, favicon and installable web-app icon derivatives. Spiny is the mascot and personality-bearing visual signature: normal Spiny belongs in the homepage hero and related expressive artwork, while dead Spiny belongs on the 404 page. Mascot artwork must retain its source aspect ratio and must not be recoloured, redrawn or visually distorted without an explicit design decision. Web derivatives are generated from the accepted brand-workspace assets and record their source hashes in `src/data/brand-assets.json`; the derivatives never become a competing brand authority.
 
 This file records the implemented design system. Keep it synchronized with `src/styles.css` whenever normative visual values change. The website must remain static and must not acquire runtime third-party design dependencies merely to reproduce this system.
 
@@ -204,7 +204,7 @@ Glass cards use a partially transparent elevated surface, a faint internal radia
 
 The page background combines three low-opacity radial accent fields with a faint technical grid. The grid must recede behind content and fade toward the bottom. It is environmental texture, not foreground decoration.
 
-Use `backdrop-filter` only as progressive enhancement. Content must remain understandable when blur is unsupported.
+Use `backdrop-filter` only as progressive enhancement. Content must remain understandable when blur is unsupported. **Accepted product constraint:** the glass blur treatment is intentionally retained at mobile widths on cards and appropriate mobile surfaces; do not propose disabling or reducing it merely as speculative performance polish. Reconsider it only on measured device/runtime evidence or an explicit new product request.
 
 ## Shapes
 
@@ -228,25 +228,37 @@ Render both with `object-fit: contain`. The profile portrait uses a square conta
 
 ### Header and navigation
 
-The header is transparent at the top and gains a translucent base-surface background, subtle border, shadow and blur after scrolling. Desktop navigation is centered. Mobile navigation uses a native `details` disclosure and appears as an elevated menu beneath the header, so it remains usable without JavaScript.
+The header is transparent at the top and gains a translucent base-surface background, subtle border, shadow and blur after scrolling. The accepted H-core masterbrand is the header mark. Desktop navigation is centered. Mobile navigation uses a native `details` disclosure and appears as an elevated menu beneath the header, so it remains usable without JavaScript.
 
-Active and hover navigation states use heading-colour text and a thin brand-gradient indicator. Keyboard focus uses a clearly visible cyan outline with offset. Closing the enhanced mobile menu with Escape returns focus to its summary control.
+Active and hover navigation states use heading-colour text and a thin brand-gradient indicator. Keyboard focus uses a clearly visible cyan outline with offset. Closing the enhanced mobile menu with Escape returns focus to its summary control. **Accepted product constraint:** the public `Private dashboard` launcher intentionally remains in the public header as the operator shortcut into the authenticated dashboard. Do not propose removing or hiding it merely as generic security/privacy polish; reconsider only on new exposure evidence, a changed authentication boundary or an explicit product request.
 
 ### Hero
 
-The hero centers Spiny, an uppercase eyebrow, the oversized Hypershell wordmark and concise explanatory copy. Keep one dominant visual focus. Decorative orbit rings and glows must remain subdued.
+The hero centers Spiny, an uppercase eyebrow, the oversized Hypershell wordmark, one concise explanatory sentence and one short signature line. A compact three-part scope strip may show the build-derived domain, core-initiative and maintained-software counts as navigational context. The scope strip remains subordinate to the wordmark. Keep one dominant visual focus and keep decorative orbit rings and glows subdued.
 
-Spiny floats slowly. On initial page load, two temporary colour-separated glitch layers may animate over the base image and must then stop. Do not run the glitch continuously. Respect `prefers-reduced-motion` by disabling glitch and reveal effects.
+On initial page load, Spiny and the wordmark may each receive one temporary colour-separated glitch treatment as a short startup sequence. After startup, brief intermittent glitches may recur on either Spiny or the wordmark while the hero is visible; they must remain short, non-continuous, pause when the page or hero is not visible, and respect `prefers-reduced-motion` by disabling glitch and reveal effects.
+
+### Rationale section
+
+The **Why Hypershell** section appears after the public domain overview and before Architecture. It explains why the environment is treated as one evolving system rather than presenting more product inventory. Use one strong statement plus three restrained numbered principles; do not turn it into another card catalogue.
 
 ### Glass cards
 
-Cards contain related information and use the shared glass treatment. Domain cards use a bordered icon tile, heading, concise description and optional tags. Project cards use small uppercase metadata, a status dot and a larger title.
+Cards contain related information and use the shared glass treatment. Domain cards use a bordered icon tile, heading, concise purpose-oriented description and optional tags. Domain copy explains what each part enables; Architecture explains how responsibilities are organized.
+
+The public narrative order is **Inside the Lab → Why Hypershell → Architecture → Projects → About**. The Projects section separates **Core initiatives** from **Maintained software** and shows build-derived counts for both plus a combined project total. Core initiatives retain a spacious two-column treatment. Maintained software uses a denser three-column desktop grid, falls back to two columns on medium screens and one column on narrow screens, and may be filtered by safe curated categories. Filter controls are progressive enhancement: without JavaScript every project remains visible.
+
+Repository cards show Public or Private only as neutral visibility metadata; repository visibility must never reuse lifecycle-status colour semantics. Each card displays a safe curated category and a compact provenance label from the single presentation owner `src/data/project-presentation.json`; raw GitHub topics are not a public presentation source. That presentation file also owns the small explicit-include set, display-name exceptions, presentation order and activity exclusions without copying GitHub-owned descriptions, visibility or URLs. Public repository cards expose an explicit text GitHub action anchored at the lower-right of the card, while private repository URLs remain undisclosed. GitHub remains the source for repository name, description, visibility, URL and public release/update timestamps.
+
+Core and repository cards have stable fragment IDs and link to generated static `/projects/<slug>/` detail pages. Those pages provide a shareable public project profile without exposing private repository URLs or private activity. The maintained-software filters remain progressive enhancement; on narrow/mobile layouts their filter bar stays sticky beneath the fixed header and the controls retain at least a 44px practical touch target.
+
+A compact Recent activity block may follow maintained software. It shows at most three public selected projects, preferring the latest public GitHub Release and falling back to the repository update timestamp when no release exists. Private repository activity is never surfaced, and the website repository itself is intentionally excluded to avoid self-referential activity noise.
 
 Hover effects enhance existing borders and glow; they must not move content enough to disturb reading or pointer targeting.
 
 ### Architecture diagram
 
-The public architecture view is a simplified responsibility stack, not an infrastructure topology. Layers are rounded, low-contrast surfaces connected by cyan arrows. Selected boundary layers may receive the brand-gradient border treatment.
+The public architecture view is a simplified responsibility stack, not an infrastructure topology. Layers are rounded, low-contrast surfaces connected by cyan arrows. Each row carries a restrained layer-purpose label so the hierarchy can be scanned before reading every capability. Selected boundary layers may receive the brand-gradient border treatment.
 
 Never expose internal addresses, ports, hostnames, credentials or a complete attack-relevant topology through this component.
 
@@ -256,11 +268,24 @@ Primary-looking links use an elevated dark fill with a gradient border rather th
 
 Interactive touch targets should be at least 44px high where layout permits. All interactive elements require visible hover and keyboard-focus states. Avoid interactions that depend exclusively on hover.
 
+### Public metadata
+
+The web-app manifest uses the Hypershell product name, H-core masterbrand derivatives and the dark `#050816` theme/background. Publish compact PNG/ICO favicon assets rather than wrapping a raster image in a large base64 SVG. `/.well-known/security.txt` provides the canonical public security contact and the build fails when its expiry is less than 90 days away. The homepage publishes a public-only `SoftwareSourceCode` `ItemList`; generated project pages are included in the sitemap with available `lastmod` dates. Public HTML revalidates, versioned CSS/JavaScript may use long-lived immutable caching, and the web-server layer provides zstd/gzip compression. Public usage insight is server-side and privacy-bounded: no client analytics script is required.
+
 ### Mascot and imagery
 
-Use the supplied mascot assets rather than approximations. The normal Spiny is used for the brand icon and homepage hero. Dead Spiny is reserved for the custom 404 page. The portrait is presented in a square crop with a restrained gradient glow.
+Use accepted brand-workspace assets rather than approximations. The H-core masterbrand supplies official identity derivatives for the header, favicon and installable web app. Normal Spiny is reserved for the homepage hero and mascot/personality use; Dead Spiny is reserved for the custom 404 page. The hero prefers an optimized WebP derivative with a PNG fallback, and the social preview uses an optimized JPEG derivative while the source PNG remains available. The portrait is presented in a square crop with a restrained gradient glow.
 
 Images must declare intrinsic width and height to prevent layout shift. Decorative duplicate glitch layers are hidden from assistive technology.
+
+## Accepted product constraints
+
+These are human-accepted product decisions, not open optimization suggestions:
+
+- **Public dashboard launcher stays.** The authenticated `Private dashboard` shortcut remains visible in the public header unless new exposure/authentication evidence or an explicit product request changes that decision.
+- **Mobile glass blur stays.** Existing glass/backdrop blur remains part of the mobile visual treatment unless measured device/runtime evidence or an explicit product request justifies a change.
+
+Generic security or performance reviews must treat these as accepted constraints rather than repeatedly reopening them without new evidence.
 
 ## Do's and Don'ts
 
