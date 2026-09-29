@@ -8,6 +8,7 @@ PLAYWRIGHT_RESULTS_DIR="${PLAYWRIGHT_RESULTS_DIR:-$ROOT_DIR/test-results/browser
 python3 -m unittest discover -s "$ROOT_DIR/tests" -p 'test_*.py' -v
 
 GITHUB_REPOSITORIES_FILE="$ROOT_DIR/tests/github-repositories.fixture.json" \
+  GITHUB_RELEASES_FILE="$ROOT_DIR/tests/github-releases.fixture.json" \
   "$ROOT_DIR/scripts/build.sh"
 
 command -v docker >/dev/null 2>&1 || {
