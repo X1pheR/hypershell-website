@@ -49,6 +49,14 @@ const server = http.createServer((request, response) => {
       sendFile(response, requestedFile, 200);
       return;
     }
+    if (!error && stats.isDirectory()) {
+      const indexFile = path.join(requestedFile, 'index.html');
+      fs.stat(indexFile, (indexError, indexStats) => {
+        if (!indexError && indexStats.isFile()) sendFile(response, indexFile, 200);
+        else sendFile(response, path.join(root, '404.html'), 404);
+      });
+      return;
+    }
 
     sendFile(response, path.join(root, '404.html'), 404);
   });

@@ -1,0 +1,21 @@
+{
+  "masterbrand": {
+    "source": "assets/masterbrand/hypershell-masterbrand.png",
+    "sha256": "ef3c0d8226849f2a4749fbf5f6f9fbd7c146db01ce94383041d04ea1ae536d33"
+  },
+  "spiny": {
+    "source": "assets/mascot/spiny.png",
+    "sha256": "3436c7f849ecc678b44bc547fe72a64c00f76bab64ad34170d63273fbec16688"
+  },
+  "derivatives": [
+    "masterbrand-96.png",
+    "favicon-96x96.png",
+    "favicon.ico",
+    "apple-touch-icon.png",
+    "web-app-manifest-192x192.png",
+    "web-app-manifest-512x512.png",
+    "spiny.png",
+    "spiny.webp",
+    "social-card.jpg"
+  ]
+}
