@@ -88,19 +88,15 @@ The public asset set includes a dark Hypershell web-app manifest and `/.well-kno
 
 ## Deploy
 
-```sh
-./scripts/deploy.sh
-```
-
-Set the deployment target explicitly through `TARGET_DIR`:
+The canonical publisher builds the static site **once** and publishes the exact same output to the OCI public origin and the Home local-recovery/wildcard-404 copy. It uses the existing SSH alias `oci-vps` with strict host-key validation. It preserves top-level runtime `tmp/` state at both sites and verifies the deployed output against the accepted build.
 
 ```sh
-TARGET_DIR=/path/to/site ./scripts/deploy.sh
+./scripts/publish.sh
 ```
 
-Deployment rebuilds the site, removes stale publication files from the target and copies the complete validated output. A top-level `tmp/` directory is deliberately preserved because deployment may provide that subtree as short-lived HTTPS egress staging for the filesystem MCP; it is runtime state, not website source or build output. Historical timestamp backups are not retained; source rollback is handled through Git and a previous commit can be rebuilt and redeployed.
+For local isolated deployment acceptance, `TARGET_DIR=/path/to/site ./scripts/deploy.sh` remains available. That single-target helper is not the production publisher. The public origin is OCI; Home is not a second public website origin. Caddy/DNS routing is unchanged. If publication succeeds at only one site, report partial deployment and reconcile that target against the same build before claiming success.
 
-The production web server serves the deployed static files. Static file updates do not require an application runtime or server restart.
+The deployment uses rsync delayed file updates and content verification. Files are atomically replaced individually, not as an atomic whole-site directory swap. The repository owns source rollback through an accepted prior Git revision, not timestamped live-site copies.
 
 ## Repository and deployment lifecycle
 
