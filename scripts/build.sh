@@ -10,6 +10,7 @@ cp -a "$ROOT_DIR/public/." "$DIST_DIR/"
 ARGS="--template $ROOT_DIR/src/index.html --project-template $ROOT_DIR/src/project.html --output $DIST_DIR/index.html --output-dir $DIST_DIR --manual $ROOT_DIR/src/data/manual-projects.json --presentation $ROOT_DIR/src/data/project-presentation.json"
 if [ -n "${GITHUB_REPOSITORIES_FILE:-}" ]; then
   set -- $ARGS --repositories-file "$GITHUB_REPOSITORIES_FILE"
+  [ -z "${HYPERSHELL_METADATA_FILE:-}" ] || set -- "$@" --metadata-file "$HYPERSHELL_METADATA_FILE"
   [ -z "${GITHUB_RELEASES_FILE:-}" ] || set -- "$@" --releases-file "$GITHUB_RELEASES_FILE"
   python3 "$ROOT_DIR/scripts/render_projects.py" "$@"
 else
