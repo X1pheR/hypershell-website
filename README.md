@@ -88,7 +88,7 @@ The public asset set includes a dark Hypershell web-app manifest and `/.well-kno
 
 ## Deploy
 
-The canonical publisher builds the static site **once** and publishes the exact same output to the OCI public origin and the Home local-recovery/wildcard-404 copy. It uses the existing SSH alias `oci-vps` with strict host-key validation. It preserves top-level runtime `tmp/` state at both sites and verifies the deployed output against the accepted build.
+The canonical publisher builds the static site **once** and publishes the exact same output to the OCI public origin and the Home local-recovery/wildcard-404 copy. It uses the existing SSH alias `oci-vps` with strict host-key validation. It preserves site-adjacent runtime `tmp/`, `reviews/` and `images/` state at both sites and verifies the deployed output against the accepted build.
 
 ```sh
 ./scripts/publish.sh

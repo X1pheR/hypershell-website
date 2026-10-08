@@ -10,8 +10,8 @@ OCI_SSH_TARGET="${OCI_SSH_TARGET:-oci-vps}"
 
 # The public site is OCI-owned; the Home copy supports local recovery and the
 # wildcard 404 route. Both consume the exact same validated static build.
-# The top-level tmp/ directory is runtime state and must survive publication.
-RSYNC_ARGS=(--archive --checksum --delay-updates --delete --exclude='/tmp/***')
+# Runtime-owned tmp/, reviews/ and images/ must survive publication.
+RSYNC_ARGS=(--archive --checksum --delay-updates --delete --exclude='/tmp/***' --exclude='/reviews/***' --exclude='/images/***')
 SSH_ARGS=(-o BatchMode=yes -o StrictHostKeyChecking=yes)
 
 verify_target() {
