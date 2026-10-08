@@ -193,16 +193,18 @@ const repositoryCards = Array.from(document.querySelectorAll('.repository-card[d
 if (projectFilterBar instanceof HTMLElement && projectFilterButtons.length && repositoryCards.length) {
   projectFilterBar.hidden = false;
 
-  function applyProjectFilter(category) {
+  function applyProjectFilter(filter) {
     let visibleCount = 0;
     repositoryCards.forEach((card) => {
-      const visible = category === 'all' || card.dataset.projectCategory === category;
+      const kindFilter = filter.startsWith('kind:') ? filter.slice(5) : null;
+      const visible = filter === 'all'
+        || (kindFilter ? card.dataset.projectKind === kindFilter : card.dataset.projectCategory === filter);
       card.hidden = !visible;
       if (visible) visibleCount += 1;
     });
 
     projectFilterButtons.forEach((button) => {
-      const active = button.dataset.projectFilter === category;
+      const active = button.dataset.projectFilter === filter;
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));
     });

@@ -1,0 +1,32 @@
+{
+  "bitwarden-secrets-manager-mcp": {
+    "schema_version": 1,
+    "name": "Bitwarden Secrets Manager MCP",
+    "category": "Identity & Resilience",
+    "kind": "mcp-server"
+  },
+  "dbackup-mcp": {
+    "schema_version": 1,
+    "name": "DBackup MCP",
+    "category": "Operations",
+    "kind": "mcp-server"
+  },
+  "firefly-iii-mcp": {
+    "schema_version": 1,
+    "name": "Firefly III MCP",
+    "category": "Applications",
+    "kind": "mcp-server"
+  },
+  "hypershell-reach": {
+    "schema_version": 1,
+    "name": "Hypershell Reach",
+    "category": "Agentic AI",
+    "kind": "mcp-server"
+  },
+  "hypershell-website": {
+    "schema_version": 1,
+    "name": "Hypershell Website",
+    "category": "Applications",
+    "kind": "website"
+  }
+}
